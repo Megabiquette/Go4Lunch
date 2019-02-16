@@ -1,3 +1,17 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="facebook_application_id" translatable="false">237274790548784</string>
+    <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb237274790548784</string>
+
     <string name="app_name">Go4Lunch</string>
+    <string name="app_description">Find a nice restaurant and invite your co-workers for lunch!</string>
+
+    <string name="button_login_facebook">Sign in with Facebook</string>
+    <string name="button_login_google">Sign in with Google</string>
+    
+    <string name="authentication_canceled">Authentication canceled</string>
+    <string name="no_internet">Device not connected to the internet</string>
+    <string name="unknown_error">Unknown error </string>
+    
+    <string name="toolbar_menu_search">Search</string>
+
 </resources>
