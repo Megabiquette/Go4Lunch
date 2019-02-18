@@ -39,15 +39,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int id = v.getId();
         switch (id){
             case R.id.main_activity_button_login_facebook:
-                startSignInActivityFacebook();
+                startSignInActivityWithFacebook();
                 break;
             case R.id.main_activity_button_login_google:
-                startSignInActivityGoogle();
+                startSignInActivityWithGoogle();
                 break;
         }
     }
 
-    private void startSignInActivityFacebook(){
+    private void startSignInActivityWithFacebook(){
         startActivityForResult(
                 AuthUI.getInstance()
                     .createSignInIntentBuilder()
@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Constants.RC_SIGN_IN);
     }
 
-    private void startSignInActivityGoogle(){
+    private void startSignInActivityWithGoogle(){
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
@@ -77,11 +77,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if(requestCode == Constants.RC_SIGN_IN){
             if(resultCode == RESULT_OK){
-                Toast.makeText(this, getResources().getString(R.string.authentication_success), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getResources().getString(R.string.authentication_success), Toast.LENGTH_SHORT).show();
                 // Start central activity
-                Intent intent = new Intent(this, CentralActivity.class);
+                Intent intent = new Intent(this, BaseActivity.class);
                 startActivity(intent);
             }else {
+                // Error
                 if(response == null){
                     Toast.makeText(this, getResources().getString(R.string.authentication_canceled), Toast.LENGTH_LONG).show();
                 }else if(response.getError().getErrorCode() == ErrorCodes.NO_NETWORK){

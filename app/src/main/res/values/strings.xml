@@ -4,6 +4,7 @@
 
     <string name="app_name">Go4Lunch</string>
     <string name="app_description">Find a nice restaurant and invite your co-workers for lunch!</string>
+    <string name="base_activity_title">I\'m Hungry!</string>
 
     <string name="button_login_facebook">Sign in with Facebook</string>
     <string name="button_login_google">Sign in with Google</string>
@@ -18,5 +19,10 @@
     <string name="drawer_lunch">MY LUNCH</string>
     <string name="drawer_settings">SETTINGS</string>
     <string name="drawer_logout">LOGOUT</string>
+
+    <string name="bottom_nav_map">Map View</string>
+    <string name="bottom_nav_list">List View</string>
+    <string name="bottom_nav_workmates">Workmates</string>
+    <string name="bottom_nav_chat">Chat</string>
 
 </resources>
