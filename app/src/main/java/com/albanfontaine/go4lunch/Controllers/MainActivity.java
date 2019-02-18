@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.albanfontaine.go4lunch.R;
@@ -14,27 +16,56 @@ import com.firebase.ui.auth.IdpResponse;
 
 import java.util.Arrays;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+    @BindView(R.id.main_activity_button_login_facebook) Button mFacebookButton;
+    @BindView(R.id.main_activity_button_login_google) Button mGoogleButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-        //startSignInActivity();
+        mFacebookButton.setOnClickListener(this);
+        mGoogleButton.setOnClickListener(this);
     }
 
-    // Sign in with Facebook and Google
-    private void startSignInActivity(){
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id){
+            case R.id.main_activity_button_login_facebook:
+                startSignInActivityFacebook();
+                break;
+            case R.id.main_activity_button_login_google:
+                startSignInActivityGoogle();
+                break;
+        }
+    }
+
+    private void startSignInActivityFacebook(){
         startActivityForResult(
                 AuthUI.getInstance()
                     .createSignInIntentBuilder()
                     .setAvailableProviders(
-                            Arrays.asList(new AuthUI.IdpConfig.FacebookBuilder().build(),
-                                    new AuthUI.IdpConfig.GoogleBuilder().build()))
+                            Arrays.asList(new AuthUI.IdpConfig.FacebookBuilder().build()))
                     .setIsSmartLockEnabled(false, true)
                     .build(),
+                Constants.RC_SIGN_IN);
+    }
+
+    private void startSignInActivityGoogle(){
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(
+                                Arrays.asList(new AuthUI.IdpConfig.GoogleBuilder().build()))
+                        .setIsSmartLockEnabled(false, true)
+                        .build(),
                 Constants.RC_SIGN_IN);
     }
 
@@ -46,7 +77,10 @@ public class MainActivity extends AppCompatActivity {
 
         if(requestCode == Constants.RC_SIGN_IN){
             if(resultCode == RESULT_OK){
-
+                Toast.makeText(this, getResources().getString(R.string.authentication_success), Toast.LENGTH_LONG).show();
+                // Start central activity
+                Intent intent = new Intent(this, CentralActivity.class);
+                startActivity(intent);
             }else {
                 if(response == null){
                     Toast.makeText(this, getResources().getString(R.string.authentication_canceled), Toast.LENGTH_LONG).show();
