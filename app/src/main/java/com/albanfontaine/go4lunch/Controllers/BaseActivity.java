@@ -1,8 +1,11 @@
 package com.albanfontaine.go4lunch.Controllers;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -19,6 +22,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.albanfontaine.go4lunch.R;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
@@ -27,7 +33,6 @@ import com.squareup.picasso.Picasso;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
-import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 public class BaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, BottomNavigationView.OnNavigationItemSelectedListener{
     @BindView(R.id.toolbar) Toolbar mToolbar;
@@ -55,6 +60,10 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         configureDrawerLayout();
         configureNavigationView();
         setUserInfos();
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.activity_base_frame_layout, new MapFragment());
+        transaction.commit();
     }
 
     protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
@@ -70,11 +79,70 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             for(UserInfo profile : getCurrentUser().getProviderData()) {
                 facebookUserId = profile.getUid();
             }
-            String linkfoto = "https://graph.facebook.com/" + facebookUserId + "/picture?height=75";
-            Picasso.with(this).load(linkfoto).transform(new CropCircleTransformation()).into(mAvatar);
+            String photoUrl = "https://graph.facebook.com/" + facebookUserId + "/picture?height=75";
+            Picasso.with(this).load(photoUrl).transform(new CropCircleTransformation()).into(mAvatar);
         }
     }
 
+    /////////////
+    // BUTTONS //
+    /////////////
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            // Menu drawer buttons
+            case R.id.drawer_lunch:
+
+                break;
+            case R.id.drawer_settings:
+
+                break;
+            case R.id.drawer_logout:
+                // Log out user and return to sign in screen
+                AuthUI.getInstance().signOut(this)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                startActivity(new Intent(BaseActivity.this, MainActivity.class));
+                                finish();
+                            }
+                        });
+                break;
+            // Bottom nav bar buttons
+            case R.id.bottom_nav_map:
+                chargeFragment(new MapFragment());
+                break;
+            case R.id.bottom_nav_list:
+                chargeFragment(new ListFragment());
+                break;
+            case R.id.bottom_nav_workmates:
+                chargeFragment(new WorkmatesFragment());
+                break;
+            case R.id.bottom_nav_chat:
+                chargeFragment(new ChatFragment());
+                break;
+            default:
+                break;
+        }
+        this.mDrawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Search button
+        if(item.getItemId() == R.id.toolbar_search){
+
+        }
+        return true;
+    }
+
+    private void chargeFragment(Fragment fragment){
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.activity_base_frame_layout, fragment);
+        transaction.commit();
+    }
 
     ////////////////////
     // CONFIGURATIONS //
@@ -106,15 +174,4 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         mNavigationView.setNavigationItemSelectedListener(this);
         mBottomNavigationView.setOnNavigationItemSelectedListener(this);
     }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            //case
-        }
-        this.mDrawerLayout.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-
 }

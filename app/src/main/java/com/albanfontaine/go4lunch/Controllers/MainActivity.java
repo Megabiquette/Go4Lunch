@@ -36,8 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        int id = v.getId();
-        switch (id){
+        switch (v.getId()){
             case R.id.main_activity_button_login_facebook:
                 startSignInActivityWithFacebook();
                 break;
