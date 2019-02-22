@@ -1,6 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="facebook_application_id" translatable="false">237274790548784</string>
     <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb237274790548784</string>
+    <string name="googlemaps_api">AIzaSyBzJZaFSqc8RFu29z9R_0n12pGjsE-7BrA</string>
 
     <string name="app_name">Go4Lunch</string>
     <string name="app_description">Find a nice restaurant and invite your co-workers for lunch!</string>

@@ -91,6 +91,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
+
             // Menu drawer buttons
             case R.id.drawer_lunch:
 
@@ -109,18 +110,19 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                             }
                         });
                 break;
+
             // Bottom nav bar buttons
             case R.id.bottom_nav_map:
-                chargeFragment(new MapFragment());
+                showFragment(new MapFragment());
                 break;
             case R.id.bottom_nav_list:
-                chargeFragment(new ListFragment());
+                showFragment(new ListFragment());
                 break;
             case R.id.bottom_nav_workmates:
-                chargeFragment(new WorkmatesFragment());
+                showFragment(new WorkmatesFragment());
                 break;
             case R.id.bottom_nav_chat:
-                chargeFragment(new ChatFragment());
+                showFragment(new ChatFragment());
                 break;
             default:
                 break;
@@ -138,7 +140,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    private void chargeFragment(Fragment fragment){
+    private void showFragment(Fragment fragment){
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.activity_base_frame_layout, fragment);
         transaction.commit();
