@@ -1,0 +1,73 @@
+package com.albanfontaine.go4lunch.Utils;
+
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+
+
+public class ItemClickSupport {
+    private final RecyclerView mRecyclerView;
+    private OnItemClickListener mOnItemClickListener;
+    private int mItemID;
+
+    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (mOnItemClickListener != null) {
+                RecyclerView.ViewHolder holder = mRecyclerView.getChildViewHolder(v);
+                mOnItemClickListener.onItemClicked(mRecyclerView, holder.getAdapterPosition(), v);
+            }
+        }
+    };
+
+    private RecyclerView.OnChildAttachStateChangeListener mAttachListener
+            = new RecyclerView.OnChildAttachStateChangeListener() {
+        @Override
+        public void onChildViewAttachedToWindow(View view) {
+            if (mOnItemClickListener != null) {
+                view.setOnClickListener(mOnClickListener);
+            }
+        }
+
+        @Override
+        public void onChildViewDetachedFromWindow(View view) {
+        }
+    };
+
+    private ItemClickSupport(RecyclerView recyclerView, int itemID) {
+        mRecyclerView = recyclerView;
+        mItemID = itemID;
+        mRecyclerView.setTag(itemID, this);
+        mRecyclerView.addOnChildAttachStateChangeListener(mAttachListener);
+    }
+
+    public static ItemClickSupport addTo(RecyclerView view, int itemID) {
+        ItemClickSupport support = (ItemClickSupport) view.getTag(itemID);
+        if (support == null) {
+            support = new ItemClickSupport(view, itemID);
+        }
+        return support;
+    }
+
+    public static ItemClickSupport removeFrom(RecyclerView view, int itemID) {
+        ItemClickSupport support = (ItemClickSupport) view.getTag(itemID);
+        if (support != null) {
+            support.detach(view);
+        }
+        return support;
+    }
+
+    public ItemClickSupport setOnItemClickListener(OnItemClickListener listener) {
+        mOnItemClickListener = listener;
+        return this;
+    }
+
+    private void detach(RecyclerView view) {
+        view.removeOnChildAttachStateChangeListener(mAttachListener);
+        view.setTag(mItemID, null);
+    }
+
+    public interface OnItemClickListener {
+        void onItemClicked(RecyclerView recyclerView, int position, View v);
+    }
+
+}

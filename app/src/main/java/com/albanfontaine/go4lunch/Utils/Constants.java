@@ -7,4 +7,7 @@ public class Constants {
 
     // Code for permission
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 90;
+
+    // For bundle
+    public static final String RESTAURANT_LIST = "restaurantList";
 }

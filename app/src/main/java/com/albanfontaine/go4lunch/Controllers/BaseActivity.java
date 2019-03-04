@@ -21,7 +21,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.albanfontaine.go4lunch.Models.Restaurant;
 import com.albanfontaine.go4lunch.R;
+import com.albanfontaine.go4lunch.Utils.Constants;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -29,9 +31,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.squareup.picasso.Picasso;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.Disposable;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 public class BaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, BottomNavigationView.OnNavigationItemSelectedListener{
@@ -39,9 +48,13 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     @BindView(R.id.activity_base_drawer_layout) DrawerLayout mDrawerLayout;
     @BindView(R.id.activity_base_nav_view) NavigationView mNavigationView;
     @BindView(R.id.activity_base_bottom_navigation) BottomNavigationView mBottomNavigationView;
+    // Drawer menu header
     ImageView mAvatar;
     TextView mUsername;
     TextView mEmail;
+
+    private Disposable mDisposable;
+    private List<Restaurant> mRestaurants;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,14 +69,14 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         mUsername  = headerView.findViewById(R.id.drawer_username);
         mEmail = headerView.findViewById(R.id.drawer_email);
 
+        mRestaurants = new ArrayList<Restaurant>();
+
         configureToolbar();
         configureDrawerLayout();
         configureNavigationView();
         setUserInfos();
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.activity_base_frame_layout, new MapFragment());
-        transaction.commit();
+        this.showFragmentWithList(new MapFragment());
     }
 
     protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
@@ -113,10 +126,10 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
 
             // Bottom nav bar buttons
             case R.id.bottom_nav_map:
-                showFragment(new MapFragment());
+                showFragmentWithList(new MapFragment());
                 break;
             case R.id.bottom_nav_list:
-                showFragment(new ListFragment());
+                showFragmentWithList(new ListFragment());
                 break;
             case R.id.bottom_nav_workmates:
                 showFragment(new WorkmatesFragment());
@@ -138,6 +151,21 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
 
         }
         return true;
+    }
+
+    // Show fragment and send the list of restaurant with a bundle
+    private void showFragmentWithList(Fragment fragment){
+        Type arrayType = new TypeToken<ArrayList<Restaurant>>(){
+        }.getType();
+        Gson gson = new Gson();
+        String restaurantList = gson.toJson(mRestaurants, arrayType);
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.RESTAURANT_LIST, restaurantList);
+        fragment.setArguments(bundle);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.activity_base_frame_layout, fragment);
+        transaction.commit();
     }
 
     private void showFragment(Fragment fragment){
