@@ -24,6 +24,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.gson.Gson;
@@ -61,7 +62,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         zoomOnMyLocation(mMap);
         Places.initialize(getContext(), getResources().getString(R.string.googlemaps_api));
         mPlacesClient = Places.createClient(getContext());
-        mMap.clear();
+        mMap.setMapStyle(new MapStyleOptions(getResources().getString(R.string.map_style)));
     }
 
     private void zoomOnMyLocation(GoogleMap map) {

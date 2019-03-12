@@ -20,12 +20,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.albanfontaine.go4lunch.Models.Restaurant;
 import com.albanfontaine.go4lunch.R;
 import com.albanfontaine.go4lunch.Utils.Constants;
+import com.albanfontaine.go4lunch.Utils.UserHelper;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -76,6 +79,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         configureNavigationView();
         setUserInfos();
 
+        this.createUserInFirestore();
         this.showFragmentWithList(new MapFragment());
     }
 
@@ -88,11 +92,19 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             mUsername.setText(getCurrentUser().getDisplayName());
             mEmail.setText(getCurrentUser().getEmail());
 
-            String facebookUserId = "";
-            for(UserInfo profile : getCurrentUser().getProviderData()) {
-                facebookUserId = profile.getUid();
+            // Get the provider for the user's avatar url
+            String provider = this.getCurrentUser().getProviders().get(0);
+            String photoUrl;
+            if (provider.equals("facebook.com")){ // Facebook
+                String facebookUserId = "";
+                for(UserInfo profile : getCurrentUser().getProviderData()) {
+                    facebookUserId = profile.getUid();
+                }
+                photoUrl = "https://graph.facebook.com/" + facebookUserId + "/picture?height=75";
+            }else{ // Google
+                photoUrl = this.getCurrentUser().getPhotoUrl().toString();
             }
-            String photoUrl = "https://graph.facebook.com/" + facebookUserId + "/picture?height=75";
+
             Picasso.with(this).load(photoUrl).transform(new CropCircleTransformation()).into(mAvatar);
         }
     }
@@ -172,6 +184,27 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.activity_base_frame_layout, fragment);
         transaction.commit();
+    }
+
+    private void createUserInFirestore(){
+        if(this.getCurrentUser() != null){
+            String uid = this.getCurrentUser().getUid();
+            String username = this.getCurrentUser().getDisplayName();
+            String avatar = (this.getCurrentUser().getPhotoUrl() != null) ?
+                    this.getCurrentUser().getPhotoUrl().toString() : null;
+
+            UserHelper.createUser(uid, username, avatar, null)
+            .addOnFailureListener(this.onFailureListener());
+        }
+    }
+
+    protected OnFailureListener onFailureListener(){
+        return new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), getString(R.string.unknown_error), Toast.LENGTH_LONG).show();
+            }
+        };
     }
 
     ////////////////////

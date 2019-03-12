@@ -13,6 +13,7 @@ import com.albanfontaine.go4lunch.Utils.Constants;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Arrays;
 
@@ -32,6 +33,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mFacebookButton.setOnClickListener(this);
         mGoogleButton.setOnClickListener(this);
+
+        // If user is already authenticated, go to the base activity
+        if(FirebaseAuth.getInstance().getCurrentUser() != null){
+            launchBaseActivity();
+        }
     }
 
     @Override
@@ -52,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     .createSignInIntentBuilder()
                     .setAvailableProviders(
                             Arrays.asList(new AuthUI.IdpConfig.FacebookBuilder().build()))
-                    .setIsSmartLockEnabled(false, true)
+                    .setIsSmartLockEnabled(false)
                     .build(),
                 Constants.RC_SIGN_IN);
     }
@@ -63,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .createSignInIntentBuilder()
                         .setAvailableProviders(
                                 Arrays.asList(new AuthUI.IdpConfig.GoogleBuilder().build()))
-                        .setIsSmartLockEnabled(false, true)
+                        .setIsSmartLockEnabled(false)
                         .build(),
                 Constants.RC_SIGN_IN);
     }
@@ -77,9 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(requestCode == Constants.RC_SIGN_IN){
             if(resultCode == RESULT_OK){
                 Toast.makeText(this, getResources().getString(R.string.authentication_success), Toast.LENGTH_SHORT).show();
-                // Start central activity
-                Intent intent = new Intent(this, BaseActivity.class);
-                startActivity(intent);
+                launchBaseActivity();
             }else {
                 // Error
                 if(response == null){
@@ -92,4 +96,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
+
+    private void launchBaseActivity(){
+        Intent intent = new Intent(this, BaseActivity.class);
+        startActivity(intent);
+    }
+
 }
