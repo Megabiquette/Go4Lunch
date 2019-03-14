@@ -12,6 +12,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class RestaurantViewHolder extends RecyclerView.ViewHolder {
+    @BindView(R.id.fragment_list_item_name) TextView mName;
     @BindView(R.id.fragment_list_item_address) TextView mAddress;
     @BindView(R.id.fragment_list_item_opening_hours) TextView mHours;
     @BindView(R.id.fragment_list_item_distance) TextView mDistance;
@@ -27,8 +28,9 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void updateWithRestaurant(Restaurant restaurant){
+        this.mName.setText(restaurant.getName());
         this.mAddress.setText(restaurant.getAddress());
-        this.mHours.setText(restaurant.getHours());
-        this.mDistance.setText(restaurant.getDistance());
+        //this.mHours.setText(restaurant.getHours());
+        this.mDistance.setText(restaurant.getDistance()+"m");
     }
 }

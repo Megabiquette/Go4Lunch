@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 import com.albanfontaine.go4lunch.Models.Restaurant;
 import com.albanfontaine.go4lunch.R;
 import com.albanfontaine.go4lunch.Utils.Constants;
+import com.albanfontaine.go4lunch.Utils.Utils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -25,6 +27,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.gson.Gson;
@@ -32,12 +35,12 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private List mRestaurants;
+    private Location mLocation;
+    private ArrayList<Restaurant> mRestaurants;
     private PlacesClient mPlacesClient;
 
     public MapFragment() { }
@@ -47,10 +50,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_map, container, false);
+        this.getRestaurantListAndLocation();
+
         SupportMapFragment mapFragment = (SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        this.getRestaurantList();
 
         return view;
     }
@@ -59,10 +62,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setBuildingsEnabled(false);
-        zoomOnMyLocation(mMap);
+        this.zoomOnMyLocation(mMap);
         Places.initialize(getContext(), getResources().getString(R.string.googlemaps_api));
         mPlacesClient = Places.createClient(getContext());
         mMap.setMapStyle(new MapStyleOptions(getResources().getString(R.string.map_style)));
+        this.addMarkers();
+    }
+
+    private void addMarkers(){
+        for(Restaurant restaurant : mRestaurants){
+            mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(restaurant.getLatitude(), restaurant.getLongitude()))
+                .icon(Utils.bitmapDescriptorFromVector(getContext(), R.drawable.restaurant_marker))
+            );
+        }
     }
 
     private void zoomOnMyLocation(GoogleMap map) {
@@ -84,11 +97,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    public void getRestaurantList(){
+    public void getRestaurantListAndLocation(){
         Gson gson = new Gson();
-        Type arrayType = new TypeToken<ArrayList<Restaurant>>(){
-        }.getType();
+        Type arrayType = new TypeToken<ArrayList<Restaurant>>(){ }.getType();
+        Type locationType = new TypeToken<Location>(){ }.getType();
         String restaurantList = getArguments().getString(Constants.RESTAURANT_LIST);
         mRestaurants = gson.fromJson(restaurantList, arrayType);
+        String location = getArguments().getString(Constants.LOCATION);
+        mLocation = gson.fromJson(location, locationType);
     }
 }

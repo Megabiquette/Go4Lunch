@@ -1,7 +1,11 @@
 package com.albanfontaine.go4lunch.Controllers;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -33,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mFacebookButton.setOnClickListener(this);
         mGoogleButton.setOnClickListener(this);
+
+        this.getLocationPermission();
 
         // If user is already authenticated, go to the base activity
         if(FirebaseAuth.getInstance().getCurrentUser() != null){
@@ -100,6 +106,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void launchBaseActivity(){
         Intent intent = new Intent(this, BaseActivity.class);
         startActivity(intent);
+    }
+
+    private void getLocationPermission(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.MY_PERMISSIONS_REQUEST_LOCATION);
+        }
     }
 
 }

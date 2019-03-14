@@ -1,7 +1,9 @@
 package com.albanfontaine.go4lunch.Models;
 
 public class Restaurant {
-    private String mUid;
+    private String mId;
+    private double mLatitude;
+    private double mLongitude;
     private String mName;
     private String mDistance;
     private String mAddress;
@@ -13,8 +15,10 @@ public class Restaurant {
     private String mWebsite;
     private String mFoodStyle;
 
-    public Restaurant(String uid, String name, String distance, String address, String hours, int peopleCount, int rating, String photo, String phone, String website, String foodStyle){
-        this.mUid = uid;
+    public Restaurant(String id, double latitude, double longitude, String name, String distance, String address, String hours, int peopleCount, int rating, String photo, String phone, String website, String foodStyle){
+        this.mId = id;
+        this.mLatitude = latitude;
+        this.mLongitude = longitude;
         this.mName = name;
         this.mDistance = distance;
         this.mAddress = address;
@@ -27,15 +31,28 @@ public class Restaurant {
         this.mFoodStyle = foodStyle;
     }
 
+    // Test
+    public Restaurant(String name, String address, double latitude, double longitude, String distance){
+        this.mName = name;
+        this.mAddress = address;
+        this.mLatitude = latitude;
+        this.mLongitude = longitude;
+        this.mDistance = distance;
+    }
+
     // GETTERS AND SETTERS
 
-    public String getUid() {
-        return mUid;
-    }
+    public String getId() { return mId; }
 
-    public void setUid(String uid) {
-        mUid = uid;
-    }
+    public void setId(String id) { mId = id; }
+
+    public double getLatitude() { return mLatitude; }
+
+    public void setLatitude(double latitude) { mLatitude = latitude; }
+
+    public double getLongitude() { return mLongitude; }
+
+    public void setLongitude(double longitude) { mLongitude = longitude; }
 
     public String getName() {
         return mName;

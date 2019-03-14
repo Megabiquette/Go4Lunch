@@ -2,16 +2,18 @@ package com.albanfontaine.go4lunch.Utils;
 
 import com.albanfontaine.go4lunch.Models.ApiResponsePlaceDetails;
 import com.albanfontaine.go4lunch.Models.ApiResponsePlaceSearchRestaurant;
+import com.albanfontaine.go4lunch.Models.Restaurant;
 
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class GoogleStreams {
 
-    // Place search API for nearby restaurents
+    // Place search API for nearby restaurants
     public static Observable<ApiResponsePlaceSearchRestaurant> streamFetchNearbyRestaurants(String location){
         GoogleService googleService = GoogleService.retrofit.create(GoogleService.class);
         return googleService.fetchNearbyRestaurants(location)
@@ -20,7 +22,7 @@ public class GoogleStreams {
                 .timeout(10, TimeUnit.SECONDS);
     }
 
-    // Place detail API
+    // Place details API
     public static Observable<ApiResponsePlaceDetails> streamFetchPlaceDetail(String placeId){
         GoogleService googleService = GoogleService.retrofit.create(GoogleService.class);
         return googleService.fetchPlaceDetails(placeId)
@@ -28,4 +30,16 @@ public class GoogleStreams {
                 .observeOn(AndroidSchedulers.mainThread())
                 .timeout(10, TimeUnit.SECONDS);
     }
+
+/*
+    public static Observable<ApiResponsePlaceDetails> streamFetchPlaceDetailForNearbyRestaurants(String location){
+        return streamFetchNearbyRestaurants(location)
+                .flatMap(new Function<ApiResponsePlaceSearchRestaurant, Observable<ApiResponsePlaceDetails>>(){
+                    @Override
+                    public Observable<ApiResponsePlaceDetails> apply(ApiResponsePlaceSearchRestaurant apiResponsePlaceSearchRestaurant) throws Exception {
+                        return streamFetchPlaceDetail(apiResponsePlaceSearchRestaurant.getResults().get(0).getId());
+                    }
+                });
+    }
+    */
 }

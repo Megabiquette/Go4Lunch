@@ -10,6 +10,7 @@ public class Constants {
 
     // For bundle
     public static final String RESTAURANT_LIST = "restaurantList";
+    public static final String LOCATION = "location";
 
     // Firestore
     public static final String COLLECTION_NAME_USERS = "users";

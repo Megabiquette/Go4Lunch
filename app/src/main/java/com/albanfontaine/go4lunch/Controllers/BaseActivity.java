@@ -1,11 +1,19 @@
 package com.albanfontaine.go4lunch.Controllers;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -22,10 +30,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.albanfontaine.go4lunch.Models.ApiResponsePlaceDetails;
+import com.albanfontaine.go4lunch.Models.ApiResponsePlaceSearchRestaurant;
 import com.albanfontaine.go4lunch.Models.Restaurant;
 import com.albanfontaine.go4lunch.R;
 import com.albanfontaine.go4lunch.Utils.Constants;
+import com.albanfontaine.go4lunch.Utils.GoogleStreams;
 import com.albanfontaine.go4lunch.Utils.UserHelper;
+import com.albanfontaine.go4lunch.Utils.Utils;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -44,6 +56,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 public class BaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, BottomNavigationView.OnNavigationItemSelectedListener{
@@ -58,6 +71,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
 
     private Disposable mDisposable;
     private List<Restaurant> mRestaurants;
+    Location mLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +94,10 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         setUserInfos();
 
         this.createUserInFirestore();
+
+        this.getCurrentLocation();
+
+        this.searchNearbyRestaurantsRequest();
         this.showFragmentWithList(new MapFragment());
     }
 
@@ -107,6 +125,66 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
 
             Picasso.with(this).load(photoUrl).transform(new CropCircleTransformation()).into(mAvatar);
         }
+    }
+
+    ///////////////////
+    // HTTP REQUESTS //
+    ///////////////////
+
+    private void searchNearbyRestaurantsRequest(){
+        this.mDisposable = GoogleStreams.streamFetchNearbyRestaurants(Utils.convertLocationToString(mLocation))
+                .subscribeWith(new DisposableObserver<ApiResponsePlaceSearchRestaurant>(){
+                    @Override
+                    public void onNext(ApiResponsePlaceSearchRestaurant apiResponsePlaceSearchRestaurant) {
+                        // For each restaurant in the Results list returned, search for its details
+                        for (ApiResponsePlaceSearchRestaurant.Result result : apiResponsePlaceSearchRestaurant.getResults()){
+                            restaurantDetailRequest(result.getPlaceId());
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) { Log.e("Request error", e.getMessage()); }
+
+                    @Override
+                    public void onComplete() { }
+                });
+    }
+
+    private void restaurantDetailRequest(String placeId){
+        this.mDisposable = GoogleStreams.streamFetchPlaceDetail(placeId)
+                .subscribeWith(new DisposableObserver<ApiResponsePlaceDetails>(){
+                    @Override
+                    public void onNext(ApiResponsePlaceDetails apiResponsePlaceDetails) {
+                        createRestaurants(apiResponsePlaceDetails);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {  Log.e("Request error", e.getMessage()); }
+
+                    @Override
+                    public void onComplete() { }
+                });
+    }
+
+    // Create a restaurant object and add it to the restaurant list
+    private void createRestaurants(ApiResponsePlaceDetails response){
+        ApiResponsePlaceDetails.Result result = response.getResult();
+
+        String name = result.getName();
+        String address = result.getAddressComponents().get(0).getShortName() + ", " + result.getAddressComponents().get(1).getShortName();
+        double latitude = result.geometry.getLocation().getLat();
+        double longitude = result.geometry.getLocation().getLng();
+        String distance = Utils.calculateDistanceBetweenLocations(mLocation, (float)latitude, (float)longitude);
+        mRestaurants.add(new Restaurant(name, address, latitude, longitude, distance));
+    }
+
+    private void getCurrentLocation(){
+        // Checks permission
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.MY_PERMISSIONS_REQUEST_LOCATION);
+        }
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        mLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(new Criteria(), false));
     }
 
     /////////////
@@ -167,12 +245,14 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
 
     // Show fragment and send the list of restaurant with a bundle
     private void showFragmentWithList(Fragment fragment){
-        Type arrayType = new TypeToken<ArrayList<Restaurant>>(){
-        }.getType();
+        Type arrayType = new TypeToken<ArrayList<Restaurant>>(){ }.getType();
+        Type locationType = new TypeToken<Location>(){ }.getType();
         Gson gson = new Gson();
         String restaurantList = gson.toJson(mRestaurants, arrayType);
+        String location = gson.toJson(mLocation, locationType);
         Bundle bundle = new Bundle();
         bundle.putString(Constants.RESTAURANT_LIST, restaurantList);
+        bundle.putString(Constants.LOCATION, location);
         fragment.setArguments(bundle);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -236,5 +316,17 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         ButterKnife.bind(this);
         mNavigationView.setNavigationItemSelectedListener(this);
         mBottomNavigationView.setOnNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.disposeWhenDestroy();
+    }
+
+    private void disposeWhenDestroy(){
+        if(this.mDisposable != null && !this.mDisposable.isDisposed()){
+            this.mDisposable.dispose();
+        }
     }
 }

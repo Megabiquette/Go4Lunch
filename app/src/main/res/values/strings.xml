@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="facebook_application_id" translatable="false">237274790548784</string>
     <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb237274790548784</string>
-    <string name="googlemaps_api">AIzaSyBzJZaFSqc8RFu29z9R_0n12pGjsE-7BrA</string>
+    <string name="googlemaps_api">AIzaSyD9_p1mVe5ibunRP_VmhNf56N8nygUo52Y</string>
 
     <string name="map_style">
         [

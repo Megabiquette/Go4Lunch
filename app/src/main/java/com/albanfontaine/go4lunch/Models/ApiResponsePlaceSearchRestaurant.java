@@ -15,21 +15,14 @@ public class ApiResponsePlaceSearchRestaurant {
         return results;
     }
 
-    public void setResults(List<Result> results) {
-        this.results = results;
-    }
-
     public class Result {
 
-        @SerializedName("id")
+        @SerializedName("place_id")
         @Expose
-        private String id;
+        private String placeId;
 
-        public String getId() {
-            return id;
-        }
-        public void setId(String id) {
-            this.id = id;
+        public String getPlaceId() {
+            return placeId;
         }
     }
 
