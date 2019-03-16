@@ -1,5 +1,6 @@
 package com.albanfontaine.go4lunch.Controllers;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,6 +30,7 @@ public class ListFragment extends Fragment {
 
     private RestaurantAdapter mAdapter;
     private ArrayList<Restaurant> mRestaurants;
+    private Gson mGson;
 
     public ListFragment() { }
 
@@ -39,6 +41,7 @@ public class ListFragment extends Fragment {
         View result = inflater.inflate(R.layout.fragment_list, container, false);
         ButterKnife.bind(this, result);
 
+        mGson = new Gson();
         this.getRestaurantList();
         this.configureRecyclerView();
         this.configureOnClickRecyclerView();
@@ -47,10 +50,9 @@ public class ListFragment extends Fragment {
     }
 
     public void getRestaurantList(){
-        Gson gson = new Gson();
         Type arrayType = new TypeToken<ArrayList<Restaurant>>(){ }.getType();
         String restaurantList = getArguments().getString(Constants.RESTAURANT_LIST);
-        mRestaurants = gson.fromJson(restaurantList, arrayType);
+        mRestaurants = mGson.fromJson(restaurantList, arrayType);
     }
 
 
@@ -60,7 +62,7 @@ public class ListFragment extends Fragment {
 
     private void configureRecyclerView(){
         // Configures the RecyclerView and its components
-        this.mAdapter = new RestaurantAdapter(this.mRestaurants);
+        this.mAdapter = new RestaurantAdapter(this.mRestaurants, getContext());
         this.mRecyclerView.setAdapter(this.mAdapter);
         this.mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -72,7 +74,11 @@ public class ListFragment extends Fragment {
                 .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
                     @Override
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-
+                        Intent intent = new Intent(getContext(), RestaurantCardActivity.class);
+                        Type restaurantType = new TypeToken<Restaurant>() { }.getType();
+                        String restaurant = mGson.toJson(mAdapter.getRestaurant(position), restaurantType);
+                        intent.putExtra(Constants.RESTAURANT, restaurant);
+                        startActivity(intent);
                     }
                 });
     }

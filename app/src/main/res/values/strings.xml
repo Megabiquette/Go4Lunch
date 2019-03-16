@@ -40,4 +40,17 @@
     <string name="bottom_nav_workmates">Workmates</string>
     <string name="bottom_nav_chat">Chat</string>
 
+    <string name="restaurant_distance">%1$sm</string>
+    <string name="restaurant_people_count">(%1d)</string>
+    <string name="restaurant_hours_no_info">No info on opening times</string>
+    <string name="restaurant_hours_open">Open\u0020</string>
+    <string name="restaurant_hours_until">until\u0020</string>
+    <string name="restaurant_hours_closed">Closed</string>
+
+    <string name="restaurant_card_call">CALL</string>
+    <string name="restaurant_card_like">LIKE</string>
+    <string name="restaurant_card_website">WEBSITE</string>
+    <string name="no_website">There is no website for this restaurant</string>
+
+
 </resources>

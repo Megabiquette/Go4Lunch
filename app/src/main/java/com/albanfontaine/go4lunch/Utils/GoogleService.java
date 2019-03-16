@@ -12,14 +12,12 @@ import retrofit2.http.Query;
 
 public interface GoogleService {
 
-    String API_KEY = "AIzaSyD9_p1mVe5ibunRP_VmhNf56N8nygUo52Y";
-
     // Place search API for nearby restaurants
-    @GET("nearbysearch/json?type=restaurant&radius=800&key=" + API_KEY)
+    @GET("nearbysearch/json?type=restaurant&radius=800&key=" + Constants.API_KEY)
     Observable<ApiResponsePlaceSearchRestaurant> fetchNearbyRestaurants(@Query("location") String location);
 
     // Place details API
-    @GET("details/json?key=" + API_KEY)
+    @GET("details/json?fields=address_component/short_name,formatted_phone_number,geometry/location,name,rating,website,photos/photo_reference,opening_hours&key=" + Constants.API_KEY)
     Observable<ApiResponsePlaceDetails> fetchPlaceDetails(@Query("placeid") String placeId);
 
     Retrofit retrofit = new Retrofit.Builder()

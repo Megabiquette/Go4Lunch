@@ -7,37 +7,30 @@ public class Restaurant {
     private String mName;
     private String mDistance;
     private String mAddress;
-    private String mHours;
+    private boolean mIsOpenNow;
+    private String mOpeningHours;
+    private String mClosingHours;
     private int mPeopleCount;
     private int mRating;
-    private String mPhoto;
+    private String mPhotoRef;
     private String mPhone;
     private String mWebsite;
     private String mFoodStyle;
 
-    public Restaurant(String id, double latitude, double longitude, String name, String distance, String address, String hours, int peopleCount, int rating, String photo, String phone, String website, String foodStyle){
+    public Restaurant(String id, String name, String address, double latitude, double longitude, String distance, String phone, int rating, String photoRef,
+                      boolean isOpenNow, String openingHours, String closingHours){
         this.mId = id;
+        this.mName = name;
+        this.mAddress = address;
         this.mLatitude = latitude;
         this.mLongitude = longitude;
-        this.mName = name;
         this.mDistance = distance;
-        this.mAddress = address;
-        this.mHours = hours;
-        this.mPeopleCount = peopleCount;
-        this.mRating = rating;
-        this.mPhoto = photo;
         this.mPhone = phone;
-        this.mWebsite = website;
-        this.mFoodStyle = foodStyle;
-    }
-
-    // Test
-    public Restaurant(String name, String address, double latitude, double longitude, String distance){
-        this.mName = name;
-        this.mAddress = address;
-        this.mLatitude = latitude;
-        this.mLongitude = longitude;
-        this.mDistance = distance;
+        this.mRating = rating;
+        this.mPhotoRef = photoRef;
+        this.mIsOpenNow = isOpenNow;
+        this.mOpeningHours = openingHours;
+        this.mClosingHours = closingHours;
     }
 
     // GETTERS AND SETTERS
@@ -78,12 +71,12 @@ public class Restaurant {
         mAddress = address;
     }
 
-    public String getHours() {
-        return mHours;
+    public String getOpeningHours() {
+        return mOpeningHours;
     }
 
-    public void setHours(String hours) {
-        mHours = hours;
+    public void setOpeningHours(String openingHours) {
+        mOpeningHours = openingHours;
     }
 
     public int getPeopleCount() {
@@ -102,12 +95,12 @@ public class Restaurant {
         mRating = rating;
     }
 
-    public String getPhoto() {
-        return mPhoto;
+    public String getPhotoRef() {
+        return mPhotoRef;
     }
 
-    public void setPhoto(String photo) {
-        mPhoto = photo;
+    public void setPhotoRef(String photo) {
+        mPhotoRef = photo;
     }
 
     public String getPhone() {
@@ -133,4 +126,8 @@ public class Restaurant {
     public void setFoodStyle(String foodStyle) {
         mFoodStyle = foodStyle;
     }
+
+    public boolean isOpenNow() { return mIsOpenNow; }
+
+    public String getClosingHours() { return mClosingHours; }
 }

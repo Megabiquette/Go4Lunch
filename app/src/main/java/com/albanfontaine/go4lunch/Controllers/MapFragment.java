@@ -3,6 +3,7 @@ package com.albanfontaine.go4lunch.Controllers;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -27,6 +28,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -36,7 +38,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback {
+public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
     private Location mLocation;
@@ -67,14 +69,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mPlacesClient = Places.createClient(getContext());
         mMap.setMapStyle(new MapStyleOptions(getResources().getString(R.string.map_style)));
         this.addMarkers();
+        mMap.setOnMarkerClickListener(this);
     }
 
     private void addMarkers(){
         for(Restaurant restaurant : mRestaurants){
-            mMap.addMarker(new MarkerOptions()
+            Marker marker = mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(restaurant.getLatitude(), restaurant.getLongitude()))
                 .icon(Utils.bitmapDescriptorFromVector(getContext(), R.drawable.restaurant_marker))
             );
+            marker.setTag(restaurant);
         }
     }
 
@@ -90,7 +94,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             if (location != null) {
                 CameraPosition cameraPosition = new CameraPosition.Builder()
                         .target(new LatLng(location.getLatitude(), location.getLongitude()))
-                        .zoom(17)
+                        .zoom(16)
                         .build();
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
@@ -105,5 +109,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mRestaurants = gson.fromJson(restaurantList, arrayType);
         String location = getArguments().getString(Constants.LOCATION);
         mLocation = gson.fromJson(location, locationType);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Gson gson = new Gson();
+        Type restaurantType = new TypeToken<Restaurant>() { }.getType();
+        String restaurant = gson.toJson(marker.getTag(), restaurantType);
+        Intent intent = new Intent(getContext(), RestaurantCardActivity.class);
+        intent.putExtra(Constants.RESTAURANT, restaurant);
+        startActivity(intent);
+
+        return false;
     }
 }

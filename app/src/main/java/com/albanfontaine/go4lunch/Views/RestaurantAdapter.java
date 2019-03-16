@@ -15,9 +15,11 @@ import java.util.List;
 public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantViewHolder> {
 
     private List<Restaurant> mRestaurants;
+    private Context mContext;
 
-    public RestaurantAdapter(List<Restaurant> restaurants){
+    public RestaurantAdapter(List<Restaurant> restaurants, Context context){
         this.mRestaurants = restaurants;
+        this.mContext = context;
     }
 
     @NonNull
@@ -33,11 +35,15 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull RestaurantViewHolder viewHolder, int position) {
-        viewHolder.updateWithRestaurant(this.mRestaurants.get(position));
+        viewHolder.updateWithRestaurant(this.mRestaurants.get(position), mContext);
     }
 
     @Override
     public int getItemCount() {
         return this.mRestaurants.size();
+    }
+
+    public Restaurant getRestaurant(int position){
+        return this.mRestaurants.get(position);
     }
 }

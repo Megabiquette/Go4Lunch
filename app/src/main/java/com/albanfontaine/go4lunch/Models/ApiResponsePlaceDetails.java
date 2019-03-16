@@ -39,14 +39,18 @@ public class ApiResponsePlaceDetails {
 
     public class Open {
 
-        @SerializedName("day")
-        @Expose
-        public Integer day;
         @SerializedName("time")
         @Expose
         public String time;
 
-        public Integer getDay() { return day; }
+        public String getTime() { return time; }
+    }
+
+    public class Close {
+
+        @SerializedName("time")
+        @Expose
+        public String time;
 
         public String getTime() { return time; }
     }
@@ -75,32 +79,22 @@ public class ApiResponsePlaceDetails {
         @SerializedName("open")
         @Expose
         public Open open;
+        @SerializedName("close")
+        @Expose
+        public Close close;
 
         public Open getOpen() { return open; }
+
+        public Close getClose() { return close; }
     }
 
     public class Photo {
 
-        @SerializedName("height")
-        @Expose
-        public Integer height;
-        @SerializedName("html_attributions")
-        @Expose
-        public List<String> htmlAttributions = null;
         @SerializedName("photo_reference")
         @Expose
         public String photoReference;
-        @SerializedName("width")
-        @Expose
-        public Integer width;
-
-        public Integer getHeight() { return height; }
-
-        public List<String> getHtmlAttributions() { return htmlAttributions; }
 
         public String getPhotoReference() { return photoReference; }
-
-        public Integer getWidth() { return width; }
     }
 
     public class AddressComponent {
@@ -123,12 +117,6 @@ public class ApiResponsePlaceDetails {
         @SerializedName("geometry")
         @Expose
         public Geometry geometry;
-        @SerializedName("icon")
-        @Expose
-        public String icon;
-        @SerializedName("id")
-        @Expose
-        public String id;
         @SerializedName("name")
         @Expose
         public String name;
@@ -138,15 +126,9 @@ public class ApiResponsePlaceDetails {
         @SerializedName("photos")
         @Expose
         public List<Photo> photos = null;
-        @SerializedName("place_id")
-        @Expose
-        public String placeId;
         @SerializedName("rating")
         @Expose
         public Double rating;
-        @SerializedName("url")
-        @Expose
-        public String url;
         @SerializedName("website")
         @Expose
         public String website;
@@ -163,14 +145,6 @@ public class ApiResponsePlaceDetails {
             return geometry;
         }
 
-        public String getIcon() {
-            return icon;
-        }
-
-        public String getId() {
-            return id;
-        }
-
         public String getName() {
             return name;
         }
@@ -183,16 +157,8 @@ public class ApiResponsePlaceDetails {
             return photos;
         }
 
-        public String getPlaceId() {
-            return placeId;
-        }
-
         public Double getRating() {
             return rating;
-        }
-
-        public String getUrl() {
-            return url;
         }
 
         public String getWebsite() {

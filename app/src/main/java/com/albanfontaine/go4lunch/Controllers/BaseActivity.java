@@ -155,7 +155,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 .subscribeWith(new DisposableObserver<ApiResponsePlaceDetails>(){
                     @Override
                     public void onNext(ApiResponsePlaceDetails apiResponsePlaceDetails) {
-                        createRestaurants(apiResponsePlaceDetails);
+                        createRestaurants(apiResponsePlaceDetails, placeId);
                     }
 
                     @Override
@@ -167,15 +167,35 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     }
 
     // Create a restaurant object and add it to the restaurant list
-    private void createRestaurants(ApiResponsePlaceDetails response){
+    private void createRestaurants(ApiResponsePlaceDetails response, String placeId){
         ApiResponsePlaceDetails.Result result = response.getResult();
-
+        Log.e("id", placeId);
+        String id = placeId;
         String name = result.getName();
         String address = result.getAddressComponents().get(0).getShortName() + ", " + result.getAddressComponents().get(1).getShortName();
         double latitude = result.geometry.getLocation().getLat();
         double longitude = result.geometry.getLocation().getLng();
         String distance = Utils.calculateDistanceBetweenLocations(mLocation, (float)latitude, (float)longitude);
-        mRestaurants.add(new Restaurant(name, address, latitude, longitude, distance));
+        String phone = result.getFormattedPhoneNumber();
+        int rating = result.getRating().intValue();
+        String photoRef = result.getPhotos().get(0).getPhotoReference();
+        boolean isOpenNow;
+        String closingHours="";
+        String openingHours="";
+        if(result.getOpeningHours() != null){
+            isOpenNow = result.getOpeningHours().getOpenNow();
+            closingHours = result.getOpeningHours().getPeriods().get(0).getClose() != null ? result.getOpeningHours().getPeriods().get(Utils.getTheDayOfTheWeek()).getClose().getTime() : null;
+            if(result.getOpeningHours().getPeriods().get(0).getOpen() != null ){
+                // Checks if restaurant is always open
+                openingHours = result.getOpeningHours().getPeriods().get(0).getOpen().getTime().equals("0000") ? "0000" : result.getOpeningHours().getPeriods().get(Utils.getTheDayOfTheWeek()).getOpen().getTime();
+            }
+        }else{
+            isOpenNow = false;
+            closingHours = null;
+            openingHours = null;
+        }
+
+        mRestaurants.add(new Restaurant(id, name, address, latitude, longitude, distance, phone, rating, photoRef, isOpenNow, openingHours, closingHours));
     }
 
     private void getCurrentLocation(){

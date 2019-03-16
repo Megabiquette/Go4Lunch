@@ -16,8 +16,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Controllers.BaseActivity"
-            android:label="@string/base_activity_title"></activity>
+        <activity android:name=".Controllers.WebViewActivity"></activity>
+        <activity android:name=".Controllers.RestaurantCardActivity"></activity>
+        <activity
+            android:name=".Controllers.BaseActivity"
+            android:label="@string/base_activity_title" />
         <activity
             android:name=".Controllers.MainActivity"
             android:label="Go4Lunch"
@@ -29,9 +32,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBzJZaFSqc8RFu29z9R_0n12pGjsE-7BrA" />
+
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
