@@ -194,8 +194,9 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             closingHours = null;
             openingHours = null;
         }
+        String website = result.getWebsite();
 
-        mRestaurants.add(new Restaurant(id, name, address, latitude, longitude, distance, phone, rating, photoRef, isOpenNow, openingHours, closingHours));
+        mRestaurants.add(new Restaurant(id, name, address, latitude, longitude, distance, phone, rating, photoRef, isOpenNow, openingHours, closingHours, website));
     }
 
     private void getCurrentLocation(){

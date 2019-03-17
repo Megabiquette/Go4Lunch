@@ -2,12 +2,10 @@ package com.albanfontaine.go4lunch.Views;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.albanfontaine.go4lunch.Models.ApiResponsePlaceDetails;
 import com.albanfontaine.go4lunch.Models.Restaurant;
 import com.albanfontaine.go4lunch.R;
 import com.albanfontaine.go4lunch.Utils.Constants;

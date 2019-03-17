@@ -1,8 +1,14 @@
 package com.albanfontaine.go4lunch.Controllers;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -11,14 +17,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.albanfontaine.go4lunch.Models.Restaurant;
+import com.albanfontaine.go4lunch.Models.User;
 import com.albanfontaine.go4lunch.R;
 import com.albanfontaine.go4lunch.Utils.Constants;
 import com.albanfontaine.go4lunch.Utils.Utils;
+import com.albanfontaine.go4lunch.Views.RestaurantAdapter;
+import com.albanfontaine.go4lunch.Views.WorkmateAdapter;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Type;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,6 +49,8 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
     @BindView(R.id.restaurant_card_recycler_view) RecyclerView mRecyclerView;
 
     private Restaurant mRestaurant;
+    private List<User> mWorkmates;
+    private WorkmateAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +63,9 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
         mWebsiteIcon.setOnClickListener(this);
 
         this.getRestaurant(savedInstanceState);
+        this.getWorkmates();
         this.displayRestaurantInfos();
-
+        this.configureRecyclerView();
     }
 
     private void getRestaurant(Bundle bundle){
@@ -60,6 +73,10 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
         Type restaurantType = new TypeToken<Restaurant>() { }.getType();
         String restaurant = getIntent().getStringExtra(Constants.RESTAURANT);
         mRestaurant = gson.fromJson(restaurant, restaurantType);
+    }
+
+    private void getWorkmates(){
+        //TODO
     }
 
     private void displayRestaurantInfos(){
@@ -76,7 +93,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.restaurant_card_icon_call:
-
+                this.callRestaurant();
                 break;
 
             case R.id.restaurant_card_icon_like:
@@ -85,14 +102,31 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
 
             case R.id.restaurant_card_icon_website:
                 if(mRestaurant.getWebsite() != null){
-                    Intent intent = new Intent(this, WebViewActivity.class);
-                    intent.putExtra(Constants.RESTAURANT_URL, mRestaurant.getWebsite());
-                    startActivity(intent);
+                    Intent webIntent = new Intent(this, WebViewActivity.class);
+                    webIntent.putExtra(Constants.RESTAURANT_URL, mRestaurant.getWebsite());
+                    startActivity(webIntent);
                 }else {
                     Toast.makeText(this,getResources().getString(R.string.no_website), Toast.LENGTH_LONG).show();
                 }
-
                 break;
         }
     }
+
+    private void callRestaurant() {
+        // Checks permission
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, 0);
+        } else {
+            Intent callIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + mRestaurant.getPhone()));
+            startActivity(callIntent);
+        }
+    }
+
+    private void configureRecyclerView(){
+        // Configures the RecyclerView and its components
+        this.mAdapter = new WorkmateAdapter(this.mWorkmates, this);
+        this.mRecyclerView.setAdapter(this.mAdapter);
+        this.mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
 }

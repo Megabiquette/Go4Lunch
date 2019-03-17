@@ -65,7 +65,6 @@ public class ListFragment extends Fragment {
         this.mAdapter = new RestaurantAdapter(this.mRestaurants, getContext());
         this.mRecyclerView.setAdapter(this.mAdapter);
         this.mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
     }
 
     // Click on an article in the list

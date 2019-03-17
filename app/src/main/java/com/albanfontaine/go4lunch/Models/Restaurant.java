@@ -15,10 +15,9 @@ public class Restaurant {
     private String mPhotoRef;
     private String mPhone;
     private String mWebsite;
-    private String mFoodStyle;
 
     public Restaurant(String id, String name, String address, double latitude, double longitude, String distance, String phone, int rating, String photoRef,
-                      boolean isOpenNow, String openingHours, String closingHours){
+                      boolean isOpenNow, String openingHours, String closingHours, String website){
         this.mId = id;
         this.mName = name;
         this.mAddress = address;
@@ -31,6 +30,7 @@ public class Restaurant {
         this.mIsOpenNow = isOpenNow;
         this.mOpeningHours = openingHours;
         this.mClosingHours = closingHours;
+        this.mWebsite = website;
     }
 
     // GETTERS AND SETTERS
@@ -117,14 +117,6 @@ public class Restaurant {
 
     public void setWebsite(String website) {
         mWebsite = website;
-    }
-
-    public String getFoodStyle() {
-        return mFoodStyle;
-    }
-
-    public void setFoodStyle(String foodStyle) {
-        mFoodStyle = foodStyle;
     }
 
     public boolean isOpenNow() { return mIsOpenNow; }
