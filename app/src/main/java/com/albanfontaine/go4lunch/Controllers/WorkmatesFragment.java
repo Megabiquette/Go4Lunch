@@ -15,8 +15,11 @@ import com.albanfontaine.go4lunch.Models.User;
 import com.albanfontaine.go4lunch.R;
 import com.albanfontaine.go4lunch.Utils.Constants;
 import com.albanfontaine.go4lunch.Utils.ItemClickSupport;
+import com.albanfontaine.go4lunch.Utils.UserHelper;
 import com.albanfontaine.go4lunch.Views.RestaurantAdapter;
 import com.albanfontaine.go4lunch.Views.WorkmateAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.Query;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
@@ -42,15 +45,17 @@ public class WorkmatesFragment extends Fragment {
         View result = inflater.inflate(R.layout.fragment_workmates, container, false);
         ButterKnife.bind(this, result);
 
-        this.getWorkmates();
         this.configureRecyclerView();
         this.configureOnClickRecyclerView();
 
         return result;
     }
 
-    private void getWorkmates(){
-
+    private FirestoreRecyclerOptions<User> generateOptionsForAdapter(Query query){
+        return new FirestoreRecyclerOptions.Builder<User>()
+                .setQuery(query, User.class)
+                .setLifecycleOwner(this)
+                .build();
     }
 
     ////////////////////
@@ -59,7 +64,7 @@ public class WorkmatesFragment extends Fragment {
 
     private void configureRecyclerView(){
         // Configures the RecyclerView and its components
-        this.mAdapter = new WorkmateAdapter(this.mWorkmates, getContext());
+        this.mAdapter = new WorkmateAdapter(generateOptionsForAdapter(UserHelper.getUsersCollection()));
         this.mRecyclerView.setAdapter(this.mAdapter);
         this.mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }

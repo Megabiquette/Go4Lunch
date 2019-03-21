@@ -52,10 +52,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_map, container, false);
-        this.getRestaurantListAndLocation();
 
         SupportMapFragment mapFragment = (SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        this.getRestaurantListAndLocation();
+
+        Log.e("mRestaurants: ", mRestaurants.toString());
 
         return view;
     }
@@ -68,8 +70,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         Places.initialize(getContext(), getResources().getString(R.string.googlemaps_api));
         mPlacesClient = Places.createClient(getContext());
         mMap.setMapStyle(new MapStyleOptions(getResources().getString(R.string.map_style)));
-        this.addMarkers();
         mMap.setOnMarkerClickListener(this);
+        this.addMarkers();
     }
 
     private void addMarkers(){

@@ -22,10 +22,6 @@ public class UserHelper {
         return UserHelper.getUsersCollection().document(uid).get();
     }
 
-    public static Task<Void> updateRestaurantChosen(String restaurantChosen, String uid){
-        return UserHelper.getUsersCollection().document(uid).update("restaurantChosen", restaurantChosen);
-    }
-
     public static Task<Void> deleteUser(String uid){
         return UserHelper.getUsersCollection().document(uid).delete();
     }

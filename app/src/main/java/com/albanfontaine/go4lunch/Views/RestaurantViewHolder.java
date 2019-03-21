@@ -49,8 +49,10 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
         }
 
         // Restaurant photo
-        String photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=500&photoreference=" + restaurant.getPhotoRef() + "&key=" + Constants.API_KEY;
-        Picasso.with(context).load(photoUrl).fit().centerCrop().into(mPhoto);
+        if(restaurant.getPhotoRef() != null){
+            String photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=500&photoreference=" + restaurant.getPhotoRef() + "&key=" + Constants.API_KEY;
+            Picasso.with(context).load(photoUrl).fit().centerCrop().into(mPhoto);
+        }
 
         // Restaurant rating
         Utils.showRatingStars(restaurant, mRating1, mRating2, mRating3, mRating4, mRating5);

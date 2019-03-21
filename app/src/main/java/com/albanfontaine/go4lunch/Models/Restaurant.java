@@ -1,5 +1,7 @@
 package com.albanfontaine.go4lunch.Models;
 
+import java.util.List;
+
 public class Restaurant {
     private String mId;
     private double mLatitude;
@@ -16,6 +18,12 @@ public class Restaurant {
     private String mPhone;
     private String mWebsite;
 
+    // For Firestore
+    private List<String> muUsersWhoLiked;
+    private List<String> mUsersWhoJoined;
+
+    public Restaurant() { }
+
     public Restaurant(String id, String name, String address, double latitude, double longitude, String distance, String phone, int rating, String photoRef,
                       boolean isOpenNow, String openingHours, String closingHours, String website){
         this.mId = id;
@@ -31,6 +39,13 @@ public class Restaurant {
         this.mOpeningHours = openingHours;
         this.mClosingHours = closingHours;
         this.mWebsite = website;
+    }
+
+    // For Firestore
+    public Restaurant(String name, List<String> usersWhoLiked, List<String> usersWhoJoined){
+        this.mName = name;
+        this.muUsersWhoLiked = usersWhoLiked;
+        this.mUsersWhoJoined = usersWhoJoined;
     }
 
     // GETTERS AND SETTERS
@@ -122,4 +137,16 @@ public class Restaurant {
     public boolean isOpenNow() { return mIsOpenNow; }
 
     public String getClosingHours() { return mClosingHours; }
+
+    public void setOpenNow(boolean openNow) { mIsOpenNow = openNow; }
+
+    public void setClosingHours(String closingHours) { mClosingHours = closingHours; }
+
+    public List<String> getMuUsersWhoLiked() { return muUsersWhoLiked; }
+
+    public void setMuUsersWhoLiked(List<String> muUsersWhoLiked) { this.muUsersWhoLiked = muUsersWhoLiked; }
+
+    public List<String> getUsersWhoJoined() { return mUsersWhoJoined; }
+
+    public void setUsersWhoJoined(List<String> usersWhoJoined) { mUsersWhoJoined = usersWhoJoined; }
 }

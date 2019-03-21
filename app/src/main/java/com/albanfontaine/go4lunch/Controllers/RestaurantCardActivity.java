@@ -20,9 +20,12 @@ import com.albanfontaine.go4lunch.Models.Restaurant;
 import com.albanfontaine.go4lunch.Models.User;
 import com.albanfontaine.go4lunch.R;
 import com.albanfontaine.go4lunch.Utils.Constants;
+import com.albanfontaine.go4lunch.Utils.UserHelper;
 import com.albanfontaine.go4lunch.Utils.Utils;
 import com.albanfontaine.go4lunch.Views.RestaurantAdapter;
 import com.albanfontaine.go4lunch.Views.WorkmateAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.Query;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
@@ -117,16 +120,22 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, 0);
         } else {
-            Intent callIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + mRestaurant.getPhone()));
+            Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + mRestaurant.getPhone()));
             startActivity(callIntent);
         }
     }
 
     private void configureRecyclerView(){
         // Configures the RecyclerView and its components
-        this.mAdapter = new WorkmateAdapter(this.mWorkmates, this);
+        this.mAdapter = new WorkmateAdapter(generateOptionsForAdapter(UserHelper.getUsersCollection()));
         this.mRecyclerView.setAdapter(this.mAdapter);
         this.mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
+    private FirestoreRecyclerOptions<User> generateOptionsForAdapter(Query query){
+        return new FirestoreRecyclerOptions.Builder<User>()
+                .setQuery(query, User.class)
+                .setLifecycleOwner(this)
+                .build();
+    }
 }

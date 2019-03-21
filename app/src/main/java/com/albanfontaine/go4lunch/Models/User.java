@@ -6,6 +6,8 @@ public class User {
     private String mAvatar;
     private String mRestaurantChosen;
 
+    public User(){ }
+
     public User(String uid, String username, String avatar, String restaurantChosen){
         this.mUid = uid;
         this.mUsername = username;

@@ -36,6 +36,7 @@ import com.albanfontaine.go4lunch.Models.Restaurant;
 import com.albanfontaine.go4lunch.R;
 import com.albanfontaine.go4lunch.Utils.Constants;
 import com.albanfontaine.go4lunch.Utils.GoogleStreams;
+import com.albanfontaine.go4lunch.Utils.RestaurantHelper;
 import com.albanfontaine.go4lunch.Utils.UserHelper;
 import com.albanfontaine.go4lunch.Utils.Utils;
 import com.firebase.ui.auth.AuthUI;
@@ -49,14 +50,18 @@ import com.squareup.picasso.Picasso;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.UndeliverableException;
 import io.reactivex.observers.DisposableObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 public class BaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, BottomNavigationView.OnNavigationItemSelectedListener{
@@ -72,60 +77,54 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     private Disposable mDisposable;
     private List<Restaurant> mRestaurants;
     Location mLocation;
+    int nbRestaurantsFetched;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
         ButterKnife.bind(this);
-        // Adds the header to the menu drawer
-        View headerView = LayoutInflater.from(this).inflate(R.layout.nav_header, mNavigationView, false);
-        mNavigationView.addHeaderView(headerView);
-
-        mAvatar =  headerView.findViewById(R.id.drawer_avatar);
-        mUsername  = headerView.findViewById(R.id.drawer_username);
-        mEmail = headerView.findViewById(R.id.drawer_email);
 
         mRestaurants = new ArrayList<Restaurant>();
 
         configureToolbar();
         configureDrawerLayout();
+        configureDrawerHeader();
         configureNavigationView();
         setUserInfos();
 
+        RxJavaPlugins.setErrorHandler(e -> {
+            if (e instanceof UndeliverableException) {
+                e = e.getCause();
+            }
+            if ((e instanceof IOException) || (e instanceof SocketException)) {
+                // fine, irrelevant network problem or API that throws on cancellation
+                return;
+            }
+            if (e instanceof InterruptedException) {
+                // fine, some blocking code was interrupted by a dispose call
+                return;
+            }
+            if ((e instanceof NullPointerException) || (e instanceof IllegalArgumentException)) {
+                return;
+            }
+            if (e instanceof IllegalStateException) {
+                return;
+            }
+            Log.e("Undeliverable exception", e.getMessage());
+            nbRestaurantsFetched -= 1;
+        });
+
         this.createUserInFirestore();
-
         this.getCurrentLocation();
-
         this.searchNearbyRestaurantsRequest();
-        this.showFragmentWithList(new MapFragment());
     }
 
     protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
 
     protected boolean isCurrentUserLoggedIn(){ return this.getCurrentUser() != null; }
 
-    private void setUserInfos(){
-        if(getCurrentUser() != null){
-            mUsername.setText(getCurrentUser().getDisplayName());
-            mEmail.setText(getCurrentUser().getEmail());
 
-            // Get the provider for the user's avatar url
-            String provider = this.getCurrentUser().getProviders().get(0);
-            String photoUrl;
-            if (provider.equals("facebook.com")){ // Facebook
-                String facebookUserId = "";
-                for(UserInfo profile : getCurrentUser().getProviderData()) {
-                    facebookUserId = profile.getUid();
-                }
-                photoUrl = "https://graph.facebook.com/" + facebookUserId + "/picture?height=75";
-            }else{ // Google
-                photoUrl = this.getCurrentUser().getPhotoUrl().toString();
-            }
-
-            Picasso.with(this).load(photoUrl).transform(new CropCircleTransformation()).into(mAvatar);
-        }
-    }
 
     ///////////////////
     // HTTP REQUESTS //
@@ -136,6 +135,8 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 .subscribeWith(new DisposableObserver<ApiResponsePlaceSearchRestaurant>(){
                     @Override
                     public void onNext(ApiResponsePlaceSearchRestaurant apiResponsePlaceSearchRestaurant) {
+                        nbRestaurantsFetched = apiResponsePlaceSearchRestaurant.getResults().size();
+                        Log.e("nb total", Integer.toString(nbRestaurantsFetched));
                         // For each restaurant in the Results list returned, search for its details
                         for (ApiResponsePlaceSearchRestaurant.Result result : apiResponsePlaceSearchRestaurant.getResults()){
                             restaurantDetailRequest(result.getPlaceId());
@@ -146,7 +147,8 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                     public void onError(Throwable e) { Log.e("Request error", e.getMessage()); }
 
                     @Override
-                    public void onComplete() { }
+                    public void onComplete() {
+                    }
                 });
     }
 
@@ -162,7 +164,12 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                     public void onError(Throwable e) {  Log.e("Request error", e.getMessage()); }
 
                     @Override
-                    public void onComplete() { }
+                    public void onComplete() {
+                        Log.e("nb", Integer.toString(mRestaurants.size()));
+                        if(mRestaurants.size() == nbRestaurantsFetched){
+                            showFragmentWithList(new MapFragment());
+                        }
+                    }
                 });
     }
 
@@ -176,9 +183,11 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         double latitude = result.geometry.getLocation().getLat();
         double longitude = result.geometry.getLocation().getLng();
         String distance = Utils.calculateDistanceBetweenLocations(mLocation, (float)latitude, (float)longitude);
-        String phone = result.getFormattedPhoneNumber();
+        String phone = result.getInternationalPhoneNumber();
         int rating = result.getRating().intValue();
-        String photoRef = result.getPhotos().get(0).getPhotoReference();
+        String photoRef = null;
+        if(result.getPhotos() != null )
+            photoRef = result.getPhotos().get(0).getPhotoReference();
         boolean isOpenNow;
         String closingHours="";
         String openingHours="";
@@ -197,6 +206,9 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         String website = result.getWebsite();
 
         mRestaurants.add(new Restaurant(id, name, address, latitude, longitude, distance, phone, rating, photoRef, isOpenNow, openingHours, closingHours, website));
+
+        // Create restaurant in Firestore
+        RestaurantHelper.createRestaurant(name, null, null).addOnFailureListener(this.onFailureListener());
     }
 
     private void getCurrentLocation(){
@@ -333,10 +345,42 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
     }
 
+    private void configureDrawerHeader(){
+        // Adds the header to the menu drawer
+        View headerView = LayoutInflater.from(this).inflate(R.layout.nav_header, mNavigationView, false);
+        mNavigationView.addHeaderView(headerView);
+
+        mAvatar =  headerView.findViewById(R.id.drawer_avatar);
+        mUsername  = headerView.findViewById(R.id.drawer_username);
+        mEmail = headerView.findViewById(R.id.drawer_email);
+    }
+
     private void configureNavigationView(){
         ButterKnife.bind(this);
         mNavigationView.setNavigationItemSelectedListener(this);
         mBottomNavigationView.setOnNavigationItemSelectedListener(this);
+    }
+
+    private void setUserInfos(){
+        if(getCurrentUser() != null){
+            mUsername.setText(getCurrentUser().getDisplayName());
+            mEmail.setText(getCurrentUser().getEmail());
+
+            // Get the provider for the user's avatar url
+            String provider = this.getCurrentUser().getProviders().get(0);
+            String photoUrl;
+            if (provider.equals("facebook.com")){ // Facebook
+                String facebookUserId = "";
+                for(UserInfo profile : getCurrentUser().getProviderData()) {
+                    facebookUserId = profile.getUid();
+                }
+                photoUrl = "https://graph.facebook.com/" + facebookUserId + "/picture?height=75";
+            }else{ // Google
+                photoUrl = this.getCurrentUser().getPhotoUrl().toString();
+            }
+
+            Picasso.with(this).load(photoUrl).transform(new CropCircleTransformation()).into(mAvatar);
+        }
     }
 
     @Override

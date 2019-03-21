@@ -14,25 +14,16 @@ import butterknife.ButterKnife;
 
 public class WebViewActivity extends AppCompatActivity {
     @BindView(R.id.webview) WebView mWebView;
-    @BindView(R.id.toolbar) Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
         ButterKnife.bind(this);
-        this.configureToolbar();
 
         String url = getIntent().getExtras().getString(Constants.RESTAURANT_URL);
         mWebView.loadUrl(url);
 
-    }
-
-    private void configureToolbar(){
-        ButterKnife.bind(this);
-        setSupportActionBar(mToolbar);
-        ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
     }
 }
 

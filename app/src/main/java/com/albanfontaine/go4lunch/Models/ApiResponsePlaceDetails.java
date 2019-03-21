@@ -111,9 +111,9 @@ public class ApiResponsePlaceDetails {
         @SerializedName("address_components")
         @Expose
         public List<AddressComponent> addressComponents = null;
-        @SerializedName("formatted_phone_number")
+        @SerializedName("international_phone_number")
         @Expose
-        public String formattedPhoneNumber;
+        public String internationalPhoneNumber;
         @SerializedName("geometry")
         @Expose
         public Geometry geometry;
@@ -133,13 +133,9 @@ public class ApiResponsePlaceDetails {
         @Expose
         public String website;
 
-        public List<AddressComponent> getAddressComponents() {
-            return addressComponents;
-        }
+        public List<AddressComponent> getAddressComponents() { return addressComponents; }
 
-        public String getFormattedPhoneNumber() {
-            return formattedPhoneNumber;
-        }
+        public String getInternationalPhoneNumber() { return internationalPhoneNumber; }
 
         public Geometry getGeometry() {
             return geometry;
