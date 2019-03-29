@@ -38,7 +38,5 @@ public class WorkmateAdapter extends FirestoreRecyclerAdapter<User, WorkmateView
         return 0;
     }
 
-
-
     public User getUser(int position){ return this.mWorkmates.get(position); }
 }

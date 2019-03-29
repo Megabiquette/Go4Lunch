@@ -124,8 +124,6 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
 
     protected boolean isCurrentUserLoggedIn(){ return this.getCurrentUser() != null; }
 
-
-
     ///////////////////
     // HTTP REQUESTS //
     ///////////////////
@@ -369,17 +367,21 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             // Get the provider for the user's avatar url
             String provider = this.getCurrentUser().getProviders().get(0);
             String photoUrl;
-            if (provider.equals("facebook.com")){ // Facebook
-                String facebookUserId = "";
-                for(UserInfo profile : getCurrentUser().getProviderData()) {
-                    facebookUserId = profile.getUid();
+            if(this.getCurrentUser().getPhotoUrl() == null){
+                photoUrl = null;
+            }else{
+                if (provider.equals("facebook.com")){ // Facebook
+                    String facebookUserId = "";
+                    for(UserInfo profile : getCurrentUser().getProviderData()) {
+                        facebookUserId = profile.getUid();
+                    }
+                    photoUrl = "https://graph.facebook.com/" + facebookUserId + "/picture?height=75";
+                }else{
+                    photoUrl = this.getCurrentUser().getPhotoUrl().toString();
                 }
-                photoUrl = "https://graph.facebook.com/" + facebookUserId + "/picture?height=75";
-            }else{ // Google
-                photoUrl = this.getCurrentUser().getPhotoUrl().toString();
-            }
 
-            Picasso.with(this).load(photoUrl).transform(new CropCircleTransformation()).into(mAvatar);
+                Picasso.with(this).load(photoUrl).transform(new CropCircleTransformation()).into(mAvatar);
+            }
         }
     }
 

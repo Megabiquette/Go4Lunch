@@ -1,5 +1,7 @@
 package com.albanfontaine.go4lunch.Models;
 
+import com.google.firebase.firestore.ServerTimestamp;
+
 import java.util.Date;
 
 public class Message {
@@ -31,6 +33,7 @@ public class Message {
         mMessage = message;
     }
 
+    @ServerTimestamp
     public Date getDateCreated() {
         return mDateCreated;
     }
