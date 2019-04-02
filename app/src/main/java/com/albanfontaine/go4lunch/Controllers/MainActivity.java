@@ -26,8 +26,10 @@ import butterknife.ButterKnife;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+    @BindView(R.id.main_activity_button_login_email) Button mEmailButton;
     @BindView(R.id.main_activity_button_login_facebook) Button mFacebookButton;
     @BindView(R.id.main_activity_button_login_google) Button mGoogleButton;
+    @BindView(R.id.main_activity_button_login_twitter) Button mTwitterButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +37,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        mEmailButton.setOnClickListener(this);
         mFacebookButton.setOnClickListener(this);
         mGoogleButton.setOnClickListener(this);
+        mTwitterButton.setOnClickListener(this);
 
         this.getLocationPermission();
 
@@ -49,13 +53,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()){
+            case R.id.main_activity_button_login_email:
+                startSignInActivityWithEmail();
+                break;
             case R.id.main_activity_button_login_facebook:
                 startSignInActivityWithFacebook();
                 break;
             case R.id.main_activity_button_login_google:
                 startSignInActivityWithGoogle();
                 break;
+            case R.id.main_activity_button_login_twitter:
+                startSignInActivityWithTwitter();
+                break;
         }
+    }
+
+    private void startSignInActivityWithEmail(){
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(
+                                Arrays.asList(new AuthUI.IdpConfig.EmailBuilder().build()))
+                        .setIsSmartLockEnabled(false)
+                        .build(),
+                Constants.RC_SIGN_IN);
     }
 
     private void startSignInActivityWithFacebook(){
@@ -75,6 +96,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .createSignInIntentBuilder()
                         .setAvailableProviders(
                                 Arrays.asList(new AuthUI.IdpConfig.GoogleBuilder().build()))
+                        .setIsSmartLockEnabled(false)
+                        .build(),
+                Constants.RC_SIGN_IN);
+    }
+
+    private void startSignInActivityWithTwitter(){
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(
+                                Arrays.asList(new AuthUI.IdpConfig.TwitterBuilder().build()))
                         .setIsSmartLockEnabled(false)
                         .build(),
                 Constants.RC_SIGN_IN);

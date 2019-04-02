@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +50,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
     @BindView(R.id.restaurant_card_icon_call) ImageView mCallIcon;
     @BindView(R.id.restaurant_card_icon_like) ImageView mLikeIcon;
     @BindView(R.id.restaurant_card_icon_website) ImageView mWebsiteIcon;
+    @BindView(R.id.restaurant_card_choose_button) Button mChooseButton;
     @BindView(R.id.restaurant_card_recycler_view) RecyclerView mRecyclerView;
 
     private Restaurant mRestaurant;
@@ -64,6 +66,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
         mCallIcon.setOnClickListener(this);
         mLikeIcon.setOnClickListener(this);
         mWebsiteIcon.setOnClickListener(this);
+        mChooseButton.setOnClickListener(this);
 
         this.getRestaurant(savedInstanceState);
         this.getWorkmates();
@@ -112,7 +115,16 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
                     Toast.makeText(this,getResources().getString(R.string.no_website), Toast.LENGTH_LONG).show();
                 }
                 break;
+
+            case R.id.restaurant_card_choose_button:
+                this.clickChoose();
+                break;
         }
+    }
+
+    private void clickChoose(){
+        mChooseButton.setBackground(getResources().getDrawable(R.drawable.btn_chosen));
+        mChooseButton.setText(getResources().getString(R.string.restaurant_card_chosen));
     }
 
     private void callRestaurant() {
@@ -127,7 +139,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
 
     private void configureRecyclerView(){
         // Configures the RecyclerView and its components
-        this.mAdapter = new WorkmateAdapter(generateOptionsForAdapter(UserHelper.getUsersCollection()));
+        this.mAdapter = new WorkmateAdapter(generateOptionsForAdapter(UserHelper.getAllUsers()));
         this.mRecyclerView.setAdapter(this.mAdapter);
         this.mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -138,4 +150,5 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
                 .setLifecycleOwner(this)
                 .build();
     }
+
 }

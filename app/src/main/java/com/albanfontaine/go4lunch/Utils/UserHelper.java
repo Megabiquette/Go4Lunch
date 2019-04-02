@@ -5,6 +5,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 public class UserHelper {
 
@@ -16,6 +17,10 @@ public class UserHelper {
         User userToCreate = new User(uid, username, avatar, restaurantChosen);
 
         return UserHelper.getUsersCollection().document(uid).set(userToCreate);
+    }
+
+    public static Query getAllUsers(){
+        return UserHelper.getUsersCollection();
     }
 
     public static Task<DocumentSnapshot> getUser(String uid){

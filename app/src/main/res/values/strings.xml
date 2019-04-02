@@ -1,6 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="facebook_application_id" translatable="false">237274790548784</string>
     <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb237274790548784</string>
+    <string name="twitter_consumer_key" translatable="false">Zyv9SeTbWyzEc5zJQ1lz6JTk8</string>
+    <string name="twitter_consumer_secret" translatable="false">uWwCCPDPJy2ulIJjODWcDhGmOQInGNoqqeLoCQbIPo8ZF35950</string>
     <string name="googlemaps_api">AIzaSyD9_p1mVe5ibunRP_VmhNf56N8nygUo52Y</string>
 
     <string name="map_style">
@@ -21,8 +23,11 @@
     <string name="app_description">Find a nice restaurant and invite your co-workers for lunch!</string>
     <string name="base_activity_title">I\'m Hungry!</string>
 
+    <string name="button_login_email">Sign in with your Email</string>
     <string name="button_login_facebook">Sign in with Facebook</string>
     <string name="button_login_google">Sign in with Google</string>
+    <string name="button_login_twitter">Sign in with Twitter</string>
+
     <string name="authentication_success">Authentication success</string>
     <string name="authentication_canceled">Authentication canceled</string>
     <string name="no_internet">Device not connected to the internet</string>

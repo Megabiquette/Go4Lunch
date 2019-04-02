@@ -13,6 +13,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import java.util.List;
 
 public class WorkmateAdapter extends FirestoreRecyclerAdapter<User, WorkmateViewHolder> {
+
     private List<User> mWorkmates;
     private Context mContext;
 
@@ -32,13 +33,4 @@ public class WorkmateAdapter extends FirestoreRecyclerAdapter<User, WorkmateView
         viewHolder.updateWithWorkmate(workmate, mContext);
     }
 
-    @Override
-    public int getItemCount() {
-        //return this.mWorkmates.size();
-        return 0;
-    }
-
-
-
-    public User getUser(int position){ return this.mWorkmates.get(position); }
 }
