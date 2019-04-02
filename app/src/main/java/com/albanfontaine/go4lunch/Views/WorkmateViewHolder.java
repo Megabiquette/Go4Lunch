@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,7 +28,13 @@ public class WorkmateViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void updateWithWorkmate(User workmate, Context context){
-        Picasso.with(context).load(workmate.getAvatar()).transform(new CropCircleTransformation()).into(mAvatar);
+        Log.e("updateWithWorkmate", workmate.getUsername());
+        if(workmate.getAvatar() != null){
+            Picasso.with(context).load(workmate.getAvatar()).transform(new CropCircleTransformation()).into(mAvatar);
+        }else{
+            // Default avatar
+            Picasso.with(context).load(R.drawable.ic_restaurant).fit().centerCrop().into(mAvatar);
+        }
         // Display text according to the activity
         if(context instanceof RestaurantCardActivity){ // Restaurant card
             mText.setText(context.getResources().getString(R.string.restaurant_card_recycler_item_workmate_name_is_joining, workmate.getUsername()));

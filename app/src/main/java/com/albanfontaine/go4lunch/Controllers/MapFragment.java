@@ -57,8 +57,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         mapFragment.getMapAsync(this);
         this.getRestaurantListAndLocation();
 
-        Log.e("mRestaurants: ", mRestaurants.toString());
-
         return view;
     }
 

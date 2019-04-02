@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -64,7 +65,7 @@ import io.reactivex.observers.DisposableObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
-public class BaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, BottomNavigationView.OnNavigationItemSelectedListener{
+public class BaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, BottomNavigationView.OnNavigationItemSelectedListener {
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.activity_base_drawer_layout) DrawerLayout mDrawerLayout;
     @BindView(R.id.activity_base_nav_view) NavigationView mNavigationView;
@@ -92,28 +93,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         configureDrawerHeader();
         configureNavigationView();
         setUserInfos();
-
-        RxJavaPlugins.setErrorHandler(e -> {
-            if (e instanceof UndeliverableException) {
-                e = e.getCause();
-            }
-            if ((e instanceof IOException) || (e instanceof SocketException)) {
-                // fine, irrelevant network problem or API that throws on cancellation
-                return;
-            }
-            if (e instanceof InterruptedException) {
-                // fine, some blocking code was interrupted by a dispose call
-                return;
-            }
-            if ((e instanceof NullPointerException) || (e instanceof IllegalArgumentException)) {
-                return;
-            }
-            if (e instanceof IllegalStateException) {
-                return;
-            }
-            Log.e("Undeliverable exception", e.getMessage());
-            nbRestaurantsFetched -= 1;
-        });
+        setErrorHandler();
 
         this.createUserInFirestore();
         this.getCurrentLocation();
@@ -134,7 +114,6 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onNext(ApiResponsePlaceSearchRestaurant apiResponsePlaceSearchRestaurant) {
                         nbRestaurantsFetched = apiResponsePlaceSearchRestaurant.getResults().size();
-                        Log.e("nb total", Integer.toString(nbRestaurantsFetched));
                         // For each restaurant in the Results list returned, search for its details
                         for (ApiResponsePlaceSearchRestaurant.Result result : apiResponsePlaceSearchRestaurant.getResults()){
                             restaurantDetailRequest(result.getPlaceId());
@@ -163,7 +142,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
 
                     @Override
                     public void onComplete() {
-                        Log.e("nb", Integer.toString(mRestaurants.size()));
+                        // Checks if all restaurants have been created
                         if(mRestaurants.size() == nbRestaurantsFetched){
                             showFragmentWithList(new MapFragment());
                         }
@@ -174,7 +153,6 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     // Create a restaurant object and add it to the restaurant list
     private void createRestaurants(ApiResponsePlaceDetails response, String placeId){
         ApiResponsePlaceDetails.Result result = response.getResult();
-        Log.e("id", placeId);
         String id = placeId;
         String name = result.getName();
         String address = result.getAddressComponents().get(0).getShortName() + ", " + result.getAddressComponents().get(1).getShortName();
@@ -215,7 +193,9 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.MY_PERMISSIONS_REQUEST_LOCATION);
         }
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        mLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(new Criteria(), false));
+        mLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) == null ?
+                locationManager.getLastKnownLocation(locationManager.getBestProvider(new Criteria(), false)) :
+                locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 
     /////////////
@@ -254,9 +234,6 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.bottom_nav_workmates:
                 showFragment(new WorkmatesFragment());
-                break;
-            case R.id.bottom_nav_chat:
-                showFragment(new ChatFragment());
                 break;
             default:
                 break;
@@ -383,6 +360,30 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 Picasso.with(this).load(photoUrl).transform(new CropCircleTransformation()).into(mAvatar);
             }
         }
+    }
+
+    private void setErrorHandler(){
+        RxJavaPlugins.setErrorHandler(e -> {
+            if (e instanceof UndeliverableException) {
+                e = e.getCause();
+            }
+            if ((e instanceof IOException) || (e instanceof SocketException)) {
+                // fine, irrelevant network problem or API that throws on cancellation
+                return;
+            }
+            if (e instanceof InterruptedException) {
+                // fine, some blocking code was interrupted by a dispose call
+                return;
+            }
+            if ((e instanceof NullPointerException) || (e instanceof IllegalArgumentException)) {
+                return;
+            }
+            if (e instanceof IllegalStateException) {
+                return;
+            }
+            Log.e("Undeliverable exception", e.getMessage());
+            nbRestaurantsFetched -= 1;
+        });
     }
 
     @Override
