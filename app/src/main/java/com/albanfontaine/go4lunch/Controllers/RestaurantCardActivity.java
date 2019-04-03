@@ -80,7 +80,6 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
         this.getRestaurant(savedInstanceState);
         this.getWorkmates();
         this.displayRestaurantInfos();
-        this.configureRecyclerView();
     }
 
     private void getRestaurant(Bundle bundle){
@@ -96,8 +95,10 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()){
                     for (QueryDocumentSnapshot document : task.getResult()){
-                        mWorkmates.add(document.toObject(User.class));
+                        User workmate = document.toObject(User.class);
+                        mWorkmates.add(workmate);
                     }
+                    configureRecyclerView();
                 }else {
                     Log.e("Workmate query error", task.getException().getMessage());
                 }
@@ -159,6 +160,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
 
     private void configureRecyclerView(){
         // Configures the RecyclerView and its components
+        Log.e("recyclerview", mWorkmates.toString());
         this.mAdapter = new WorkmateAdapter(this.mWorkmates, this);
         this.mRecyclerView.setAdapter(this.mAdapter);
         this.mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
