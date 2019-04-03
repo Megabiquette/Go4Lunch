@@ -5,10 +5,10 @@ import java.util.List;
 public class FirebaseRestaurant {
 
     private String mName;
-    private List<String> mUsersWhoLiked;
-    private List<String> mUsersWhoJoined;
+    private List<User> mUsersWhoLiked;
+    private List<User> mUsersWhoJoined;
 
-    public FirebaseRestaurant(String name, List<String> usersWhoLiked, List<String> usersWhoJoined){
+    public FirebaseRestaurant(String name, List<User> usersWhoLiked, List<User> usersWhoJoined){
         this.mName = name;
         this.mUsersWhoLiked = usersWhoLiked;
         this.mUsersWhoJoined = usersWhoJoined;
@@ -22,19 +22,19 @@ public class FirebaseRestaurant {
         mName = name;
     }
 
-    public List<String> getUsersWhoLiked() {
+    public List<User> getUsersWhoLiked() {
         return mUsersWhoLiked;
     }
 
-    public void setUsersWhoLiked(List<String> usersWhoLiked) {
+    public void setUsersWhoLiked(List<User> usersWhoLiked) {
         mUsersWhoLiked = usersWhoLiked;
     }
 
-    public List<String> getUsersWhoJoined() {
+    public List<User> getUsersWhoJoined() {
         return mUsersWhoJoined;
     }
 
-    public void setUsersWhoJoined(List<String> usersWhoJoined) {
+    public void setUsersWhoJoined(List<User> usersWhoJoined) {
         mUsersWhoJoined = usersWhoJoined;
     }
 }

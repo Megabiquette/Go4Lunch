@@ -3,7 +3,7 @@
     <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb237274790548784</string>
     <string name="twitter_consumer_key" translatable="false">Zyv9SeTbWyzEc5zJQ1lz6JTk8</string>
     <string name="twitter_consumer_secret" translatable="false">uWwCCPDPJy2ulIJjODWcDhGmOQInGNoqqeLoCQbIPo8ZF35950</string>
-    <string name="googlemaps_api">AIzaSyD9_p1mVe5ibunRP_VmhNf56N8nygUo52Y</string>
+    <string name="googlemaps_api">AIzaSyCuLEwa0AV7nGr26_yFIS57Vf9eEZOjvlQ</string>
 
     <string name="map_style">
         [

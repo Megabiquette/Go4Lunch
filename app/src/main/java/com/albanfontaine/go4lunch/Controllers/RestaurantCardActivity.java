@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -26,13 +27,20 @@ import com.albanfontaine.go4lunch.Utils.Utils;
 import com.albanfontaine.go4lunch.Views.RestaurantAdapter;
 import com.albanfontaine.go4lunch.Views.WorkmateAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -62,6 +70,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_card);
         ButterKnife.bind(this);
+        mWorkmates = new ArrayList<>();
 
         mCallIcon.setOnClickListener(this);
         mLikeIcon.setOnClickListener(this);
@@ -82,7 +91,18 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
     }
 
     private void getWorkmates(){
-        //TODO
+        UserHelper.getAllUsers().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()){
+                    for (QueryDocumentSnapshot document : task.getResult()){
+                        mWorkmates.add(document.toObject(User.class));
+                    }
+                }else {
+                    Log.e("Workmate query error", task.getException().getMessage());
+                }
+            }
+        });
     }
 
     private void displayRestaurantInfos(){
@@ -139,16 +159,9 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
 
     private void configureRecyclerView(){
         // Configures the RecyclerView and its components
-        this.mAdapter = new WorkmateAdapter(generateOptionsForAdapter(UserHelper.getAllUsers()));
+        this.mAdapter = new WorkmateAdapter(this.mWorkmates, this);
         this.mRecyclerView.setAdapter(this.mAdapter);
         this.mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-    }
-
-    private FirestoreRecyclerOptions<User> generateOptionsForAdapter(Query query){
-        return new FirestoreRecyclerOptions.Builder<User>()
-                .setQuery(query, User.class)
-                .setLifecycleOwner(this)
-                .build();
     }
 
 }
