@@ -29,7 +29,6 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantViewHolder
         mContext = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(mContext);
         View view = inflater.inflate(R.layout.fragment_list_item, parent, false);
-
         return new RestaurantViewHolder(view);
     }
 
@@ -40,6 +39,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantViewHolder
 
     @Override
     public int getItemCount() {
+
         if(mRestaurants == null)
             return 0;
         return this.mRestaurants.size();
