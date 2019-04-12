@@ -56,8 +56,6 @@
     <string name="restaurant_card_like">LIKE</string>
     <string name="restaurant_card_website">WEBSITE</string>
     <string name="no_website">There is no website for this restaurant</string>
-    <string name="restaurant_card_choose">Choose?</string>
-    <string name="restaurant_card_chosen">Chosen!</string>
 
     <string name="restaurant_card_recycler_item_workmate_name_is_joining">%1$s is joining!</string>
     <string name="workmate_recycler_view_eating_at">%1$s is eating at %2$s</string>

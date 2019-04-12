@@ -30,4 +30,12 @@ public class UserHelper {
     public static Task<Void> deleteUser(String uid){
         return UserHelper.getUsersCollection().document(uid).delete();
     }
+
+    public static Task<Void> selectRestaurant(String uid, String restaurantName){
+        return UserHelper.getUsersCollection().document(uid).update("restaurantChosen", restaurantName);
+    }
+
+    public static Task<Void> deselectRestaurant(String uid){
+        return UserHelper.getUsersCollection().document(uid).update("restaurantChosen", null);
+    }
 }

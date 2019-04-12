@@ -28,12 +28,9 @@ public class WorkmateViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void updateWithWorkmate(User workmate, Context context){
-        Log.e("updateWithWorkmate", workmate.getUsername());
         if(workmate.getAvatar() != null){
             Picasso.with(context).load(workmate.getAvatar()).transform(new CropCircleTransformation()).into(mAvatar);
-        }else{
-            // Default avatar
-            Picasso.with(context).load(R.drawable.ic_restaurant).fit().centerCrop().into(mAvatar);
+
         }
         // Display text according to the activity
         if(context instanceof RestaurantCardActivity){ // Restaurant card

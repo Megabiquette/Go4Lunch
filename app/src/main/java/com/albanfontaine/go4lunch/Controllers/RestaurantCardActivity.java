@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,7 +30,9 @@ import com.albanfontaine.go4lunch.Views.WorkmateAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -58,12 +61,15 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
     @BindView(R.id.restaurant_card_icon_call) ImageView mCallIcon;
     @BindView(R.id.restaurant_card_icon_like) ImageView mLikeIcon;
     @BindView(R.id.restaurant_card_icon_website) ImageView mWebsiteIcon;
-    @BindView(R.id.restaurant_card_choose_button) Button mChooseButton;
+    @BindView(R.id.restaurant_card_choose_button) ImageButton mChooseButton;
     @BindView(R.id.restaurant_card_recycler_view) RecyclerView mRecyclerView;
 
     private Restaurant mRestaurant;
     private List<User> mWorkmates;
     private WorkmateAdapter mAdapter;
+    private int numberWorkmates = 0;
+    private boolean mChosen = false;
+    private User mUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +77,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
         setContentView(R.layout.activity_restaurant_card);
         ButterKnife.bind(this);
         mWorkmates = new ArrayList<>();
+        this.getUser();
 
         mCallIcon.setOnClickListener(this);
         mLikeIcon.setOnClickListener(this);
@@ -94,11 +101,14 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()){
+                    numberWorkmates = task.getResult().getDocuments().size();
                     for (QueryDocumentSnapshot document : task.getResult()){
                         User workmate = document.toObject(User.class);
                         mWorkmates.add(workmate);
+                        if(mWorkmates.size() == numberWorkmates){
+                            configureRecyclerView();
+                        }
                     }
-                    configureRecyclerView();
                 }else {
                     Log.e("Workmate query error", task.getException().getMessage());
                 }
@@ -144,8 +154,15 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
     }
 
     private void clickChoose(){
-        mChooseButton.setBackground(getResources().getDrawable(R.drawable.btn_chosen));
-        mChooseButton.setText(getResources().getString(R.string.restaurant_card_chosen));
+        if(!mChosen){ // not chosen at first
+            mChooseButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_check));
+            mChosen = true;
+            this.selectRestaurant();
+        }else{
+            mChooseButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_cross));
+            mChosen = false;
+            this.deselectRestaurant();
+        }
     }
 
     private void callRestaurant() {
@@ -155,6 +172,35 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
         } else {
             Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + mRestaurant.getPhone()));
             startActivity(callIntent);
+        }
+    }
+
+    private void getUser(){
+        UserHelper.getUser(FirebaseAuth.getInstance().getCurrentUser().getUid()).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    mUser = task.getResult().toObject(User.class);
+                    setChosenOrNot();
+                }else{
+                    Log.e("getUser", task.getException().getMessage());
+                }
+            }
+        });
+    }
+
+    private void selectRestaurant(){
+        UserHelper.selectRestaurant(mUser.getUid(), mRestaurant.getName());
+    }
+
+    private void deselectRestaurant(){
+        UserHelper.deselectRestaurant(mUser.getUid());
+    }
+
+    private void setChosenOrNot(){
+        if(mUser.getRestaurantChosen()!= null && mUser.getRestaurantChosen().equals(mName.getText().toString())){
+            mChooseButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_check));
+            mChosen = true;
         }
     }
 

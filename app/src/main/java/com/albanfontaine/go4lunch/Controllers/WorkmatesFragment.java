@@ -68,6 +68,7 @@ public class WorkmatesFragment extends Fragment {
                     for (QueryDocumentSnapshot document : task.getResult()){
                         User workmate = document.toObject(User.class);
                         mWorkmates.add(workmate);
+                        Log.e("getWorkmates", workmate.getUsername());
                     }
                     configureRecyclerView();
                 }else {
