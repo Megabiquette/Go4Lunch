@@ -23,6 +23,7 @@ import com.albanfontaine.go4lunch.Models.Restaurant;
 import com.albanfontaine.go4lunch.Models.User;
 import com.albanfontaine.go4lunch.R;
 import com.albanfontaine.go4lunch.Utils.Constants;
+import com.albanfontaine.go4lunch.Utils.RestaurantHelper;
 import com.albanfontaine.go4lunch.Utils.UserHelper;
 import com.albanfontaine.go4lunch.Utils.Utils;
 import com.albanfontaine.go4lunch.Views.RestaurantAdapter;
@@ -31,6 +32,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
@@ -60,6 +62,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
     @BindView(R.id.restaurant_card_rating5) ImageView mRating5;
     @BindView(R.id.restaurant_card_icon_call) ImageView mCallIcon;
     @BindView(R.id.restaurant_card_icon_like) ImageView mLikeIcon;
+    @BindView(R.id.restaurant_card_like_text) TextView mLikeText;
     @BindView(R.id.restaurant_card_icon_website) ImageView mWebsiteIcon;
     @BindView(R.id.restaurant_card_choose_button) ImageButton mChooseButton;
     @BindView(R.id.restaurant_card_recycler_view) RecyclerView mRecyclerView;
@@ -69,6 +72,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
     private WorkmateAdapter mAdapter;
     private int numberWorkmates = 0;
     private boolean mChosen = false;
+    private boolean mLiked = false;
     private User mUser;
 
     @Override
@@ -97,7 +101,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
     }
 
     private void getWorkmates(){
-        UserHelper.getAllUsers().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        RestaurantHelper.getWhoJoinedRestaurant(mRestaurant.getName()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()){
@@ -134,7 +138,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
                 break;
 
             case R.id.restaurant_card_icon_like:
-
+                this.clickLike();
                 break;
 
             case R.id.restaurant_card_icon_website:
@@ -165,6 +169,20 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
         }
     }
 
+    private void clickLike(){
+        if(!mLiked){ // not liked at first
+            mLikeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_star_green));
+            mLiked = true;
+            mLikeText.setText(getResources().getString(R.string.restaurant_card_liked));
+            this.likeRestaurant();
+        }else{
+            mLikeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_star));
+            mLiked = false;
+            mLikeText.setText(getResources().getString(R.string.restaurant_card_like));
+            this.unlikeRestaurant();
+        }
+    }
+
     private void callRestaurant() {
         // Checks permission
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
@@ -181,7 +199,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
                     mUser = task.getResult().toObject(User.class);
-                    setChosenOrNot();
+                    setChosenAndLiked();
                 }else{
                     Log.e("getUser", task.getException().getMessage());
                 }
@@ -191,22 +209,52 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
 
     private void selectRestaurant(){
         UserHelper.selectRestaurant(mUser.getUid(), mRestaurant.getName());
+        RestaurantHelper.addUserToJoinList(mRestaurant.getName(), mUser.getUid(), mUser);
     }
 
     private void deselectRestaurant(){
         UserHelper.deselectRestaurant(mUser.getUid());
+        RestaurantHelper.removeUserToJoinList(mRestaurant.getName(), mUser.getUid());
+
     }
 
-    private void setChosenOrNot(){
+    private void likeRestaurant(){
+        RestaurantHelper.addUserToLikedList(mRestaurant.getName(), mUser.getUid(), mUser);
+    }
+
+    private void unlikeRestaurant(){
+        RestaurantHelper.removeUserToLikedList(mRestaurant.getName(), mUser.getUid());
+    }
+
+    private void setChosenAndLiked(){
+        // see if the restaurant was already chosen
         if(mUser.getRestaurantChosen()!= null && mUser.getRestaurantChosen().equals(mName.getText().toString())){
             mChooseButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_check));
             mChosen = true;
         }
+
+        // see if the restaurant was liked
+        RestaurantHelper.getWhoLikedRestaurant(mRestaurant.getName()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()){
+                    for(QueryDocumentSnapshot document : task.getResult()){
+                        if(document.get("uid").equals(mUser.getUid())){
+                            mLiked = true;
+                            mLikeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_star_green));
+                            mLikeText.setText(getResources().getString(R.string.restaurant_card_liked));
+                        }
+                    }
+                }else{
+                    Log.e("Restaurant query error", task.getException().getMessage());
+                }
+            }
+        });
+
     }
 
     private void configureRecyclerView(){
         // Configures the RecyclerView and its components
-        Log.e("recyclerview", mWorkmates.toString());
         this.mAdapter = new WorkmateAdapter(this.mWorkmates, this);
         this.mRecyclerView.setAdapter(this.mAdapter);
         this.mRecyclerView.setLayoutManager(new LinearLayoutManager(this));

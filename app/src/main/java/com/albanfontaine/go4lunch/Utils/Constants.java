@@ -19,5 +19,8 @@ public class Constants {
 
     // Firestore
     public static final String COLLECTION_NAME_USERS = "users";
-    public static final String  COLLECTION_NAME_RESTAURANT = "restaurants";
+    public static final String COLLECTION_NAME_RESTAURANT = "restaurants";
+    public static final String COLLECTION_NAME_USERS_WHO_JOINED = "usersWhoJoined";
+    public static final String COLLECTION_NAME_USERS_WHO_LIKED = "usersWhoLiked";
+
 }

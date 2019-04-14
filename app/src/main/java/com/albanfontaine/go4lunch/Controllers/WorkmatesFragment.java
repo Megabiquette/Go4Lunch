@@ -17,6 +17,7 @@ import com.albanfontaine.go4lunch.Models.User;
 import com.albanfontaine.go4lunch.R;
 import com.albanfontaine.go4lunch.Utils.Constants;
 import com.albanfontaine.go4lunch.Utils.ItemClickSupport;
+import com.albanfontaine.go4lunch.Utils.RestaurantHelper;
 import com.albanfontaine.go4lunch.Utils.UserHelper;
 import com.albanfontaine.go4lunch.Views.RestaurantAdapter;
 import com.albanfontaine.go4lunch.Views.WorkmateAdapter;
@@ -26,6 +27,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
@@ -41,6 +43,8 @@ public class WorkmatesFragment extends Fragment {
 
     private WorkmateAdapter mAdapter;
     private List<User> mWorkmates;
+    private ArrayList<Restaurant> mRestaurants;
+    Gson mGson;
 
     public WorkmatesFragment() { }
 
@@ -52,7 +56,9 @@ public class WorkmatesFragment extends Fragment {
         View result = inflater.inflate(R.layout.fragment_workmates, container, false);
         ButterKnife.bind(this, result);
         mWorkmates = new ArrayList<>();
+        mGson = new Gson();
 
+        this.getRestaurantList();
         this.getWorkmates();
         this.configureRecyclerView();
         this.configureOnClickRecyclerView();
@@ -68,7 +74,6 @@ public class WorkmatesFragment extends Fragment {
                     for (QueryDocumentSnapshot document : task.getResult()){
                         User workmate = document.toObject(User.class);
                         mWorkmates.add(workmate);
-                        Log.e("getWorkmates", workmate.getUsername());
                     }
                     configureRecyclerView();
                 }else {
@@ -95,14 +100,28 @@ public class WorkmatesFragment extends Fragment {
                 .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
                     @Override
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                        /*
                         Intent intent = new Intent(getContext(), RestaurantCardActivity.class);
                         Type restaurantType = new TypeToken<Restaurant>() { }.getType();
-                        String restaurant = mGson.toJson(mAdapter.getRestaurant(position), restaurantType);
-                        intent.putExtra(Constants.RESTAURANT, restaurant);
+                        Restaurant restaurant = getRestaurantChosen(mAdapter.getWorkmate(position).getRestaurantChosen());
+                        String restaurantString = mGson.toJson(restaurant, restaurantType);
+                        intent.putExtra(Constants.RESTAURANT, restaurantString);
                         startActivity(intent);
-                        */
                     }
                 });
+    }
+
+    private Restaurant getRestaurantChosen(String name){
+        for(Restaurant restaurant : mRestaurants){
+            if(restaurant.getName().equals(name)){
+                return restaurant;
+            }
+        }
+        return null;
+    }
+
+    private void getRestaurantList(){
+        Type arrayType = new TypeToken<ArrayList<Restaurant>>(){ }.getType();
+        String restaurantList = getArguments().getString(Constants.RESTAURANT_LIST);
+        mRestaurants = mGson.fromJson(restaurantList, arrayType);
     }
 }

@@ -55,6 +55,7 @@
     <string name="restaurant_card_call">CALL</string>
     <string name="restaurant_card_like">LIKE</string>
     <string name="restaurant_card_website">WEBSITE</string>
+    <string name="restaurant_card_liked">LIKED!</string>
     <string name="no_website">There is no website for this restaurant</string>
 
     <string name="restaurant_card_recycler_item_workmate_name_is_joining">%1$s is joining!</string>

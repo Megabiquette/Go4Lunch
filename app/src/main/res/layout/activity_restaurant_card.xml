@@ -144,6 +144,7 @@
                 android:textSize="@dimen/restaurant_card_name_icon_text_size"/>
 
             <TextView
+                android:id="@+id/restaurant_card_like_text"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"

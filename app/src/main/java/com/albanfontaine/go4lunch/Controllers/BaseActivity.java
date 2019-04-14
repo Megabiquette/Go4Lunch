@@ -184,7 +184,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         mRestaurants.add(new Restaurant(id, name, address, latitude, longitude, distance, phone, rating, photoRef, isOpenNow, openingHours, closingHours, website));
 
         // Create restaurant in Firestore
-        RestaurantHelper.createRestaurant(name, null, null).addOnFailureListener(this.onFailureListener());
+        RestaurantHelper.createRestaurant(name).addOnFailureListener(this.onFailureListener());
     }
 
     private void getCurrentLocation(){
@@ -194,7 +194,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         }
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         mLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) == null ?
-                locationManager.getLastKnownLocation(locationManager.getBestProvider(new Criteria(), false)) :
+                locationManager.getLastKnownLocation(locationManager.NETWORK_PROVIDER) :
                 locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 
@@ -233,7 +233,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 showFragmentWithList(new ListFragment());
                 break;
             case R.id.bottom_nav_workmates:
-                showFragment(new WorkmatesFragment());
+                showFragmentWithList(new WorkmatesFragment());
                 break;
             default:
                 break;
@@ -263,12 +263,6 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         bundle.putString(Constants.LOCATION, location);
         fragment.setArguments(bundle);
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.activity_base_frame_layout, fragment);
-        transaction.commit();
-    }
-
-    private void showFragment(Fragment fragment){
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.activity_base_frame_layout, fragment);
         transaction.commit();

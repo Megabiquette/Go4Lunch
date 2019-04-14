@@ -45,4 +45,8 @@ public class WorkmateAdapter extends RecyclerView.Adapter<WorkmateViewHolder> {
             return 0;
         return this.mWorkmates.size();
     }
+
+    public User getWorkmate(int position){
+        return this.mWorkmates.get(position);
+    }
 }
