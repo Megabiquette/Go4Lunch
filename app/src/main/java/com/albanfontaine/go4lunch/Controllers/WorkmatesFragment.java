@@ -19,6 +19,7 @@ import com.albanfontaine.go4lunch.Utils.Constants;
 import com.albanfontaine.go4lunch.Utils.ItemClickSupport;
 import com.albanfontaine.go4lunch.Utils.RestaurantHelper;
 import com.albanfontaine.go4lunch.Utils.UserHelper;
+import com.albanfontaine.go4lunch.Utils.Utils;
 import com.albanfontaine.go4lunch.Views.RestaurantAdapter;
 import com.albanfontaine.go4lunch.Views.WorkmateAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -102,21 +103,12 @@ public class WorkmatesFragment extends Fragment {
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                         Intent intent = new Intent(getContext(), RestaurantCardActivity.class);
                         Type restaurantType = new TypeToken<Restaurant>() { }.getType();
-                        Restaurant restaurant = getRestaurantChosen(mAdapter.getWorkmate(position).getRestaurantChosen());
+                        Restaurant restaurant = Utils.getRestaurantChosen(mAdapter.getWorkmate(position).getRestaurantChosen(), mRestaurants);
                         String restaurantString = mGson.toJson(restaurant, restaurantType);
                         intent.putExtra(Constants.RESTAURANT, restaurantString);
                         startActivity(intent);
                     }
                 });
-    }
-
-    private Restaurant getRestaurantChosen(String name){
-        for(Restaurant restaurant : mRestaurants){
-            if(restaurant.getName().equals(name)){
-                return restaurant;
-            }
-        }
-        return null;
     }
 
     private void getRestaurantList(){

@@ -30,6 +30,7 @@ import com.albanfontaine.go4lunch.Views.RestaurantAdapter;
 import com.albanfontaine.go4lunch.Views.WorkmateAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -117,7 +118,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
                     Log.e("Workmate query error", task.getException().getMessage());
                 }
             }
-        });
+        }).addOnFailureListener(this.onFailureListener());
     }
 
     private void displayRestaurantInfos(){
@@ -159,26 +160,16 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
 
     private void clickChoose(){
         if(!mChosen){ // not chosen at first
-            mChooseButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_check));
-            mChosen = true;
             this.selectRestaurant();
         }else{
-            mChooseButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_cross));
-            mChosen = false;
             this.deselectRestaurant();
         }
     }
 
     private void clickLike(){
         if(!mLiked){ // not liked at first
-            mLikeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_star_green));
-            mLiked = true;
-            mLikeText.setText(getResources().getString(R.string.restaurant_card_liked));
             this.likeRestaurant();
         }else{
-            mLikeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_star));
-            mLiked = false;
-            mLikeText.setText(getResources().getString(R.string.restaurant_card_like));
             this.unlikeRestaurant();
         }
     }
@@ -204,26 +195,63 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
                     Log.e("getUser", task.getException().getMessage());
                 }
             }
-        });
+        }).addOnFailureListener(this.onFailureListener());
     }
 
     private void selectRestaurant(){
-        UserHelper.selectRestaurant(mUser.getUid(), mRestaurant.getName());
-        RestaurantHelper.addUserToJoinList(mRestaurant.getName(), mUser.getUid(), mUser);
+        if(mUser.getRestaurantChosen() != null){
+            // User already chose another restaurant, we have to deselect it
+            RestaurantHelper.removeUserToJoinList(mUser.getRestaurantChosen(), mUser.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    UserHelper.selectRestaurant(mUser.getUid(), mRestaurant.getName());
+                    RestaurantHelper.addUserToJoinList(mRestaurant.getName(), mUser.getUid(), mUser);
+                    mChooseButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_check));
+                    mChosen = true;
+                    mUser.setRestaurantChosen(mRestaurant.getName());
+                }
+            }).addOnFailureListener(this.onFailureListener());
+        }else{
+            UserHelper.selectRestaurant(mUser.getUid(), mRestaurant.getName());
+            RestaurantHelper.addUserToJoinList(mRestaurant.getName(), mUser.getUid(), mUser);
+            mChooseButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_check));
+            mChosen = true;
+            mUser.setRestaurantChosen(mRestaurant.getName());
+        }
     }
 
     private void deselectRestaurant(){
-        UserHelper.deselectRestaurant(mUser.getUid());
-        RestaurantHelper.removeUserToJoinList(mRestaurant.getName(), mUser.getUid());
-
+        RestaurantHelper.removeUserToJoinList(mUser.getRestaurantChosen(), mUser.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                UserHelper.deselectRestaurant(mUser.getUid());
+                mChooseButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_cross));
+                mChosen = false;
+            }
+        }).addOnFailureListener(this.onFailureListener());
     }
 
     private void likeRestaurant(){
-        RestaurantHelper.addUserToLikedList(mRestaurant.getName(), mUser.getUid(), mUser);
+        RestaurantHelper.addUserToLikedList(mRestaurant.getName(), mUser.getUid(), mUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                mLikeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_star_green));
+                mLiked = true;
+                mLikeText.setText(getResources().getString(R.string.restaurant_card_liked));
+            }
+        }).addOnFailureListener(this.onFailureListener());
     }
 
     private void unlikeRestaurant(){
-        RestaurantHelper.removeUserToLikedList(mRestaurant.getName(), mUser.getUid());
+        RestaurantHelper.removeUserToLikedList(mRestaurant.getName(), mUser.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                mLikeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_star));
+                mLiked = false;
+                mLikeText.setText(getResources().getString(R.string.restaurant_card_like));
+            }
+        });
+
     }
 
     private void setChosenAndLiked(){
@@ -250,7 +278,6 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
                 }
             }
         });
-
     }
 
     private void configureRecyclerView(){
@@ -258,6 +285,15 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
         this.mAdapter = new WorkmateAdapter(this.mWorkmates, this);
         this.mRecyclerView.setAdapter(this.mAdapter);
         this.mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    protected OnFailureListener onFailureListener(){
+        return new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), getString(R.string.unknown_error), Toast.LENGTH_LONG).show();
+            }
+        };
     }
 
 }

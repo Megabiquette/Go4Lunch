@@ -7,14 +7,16 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.util.Date;
+
 public class UserHelper {
 
     public static CollectionReference getUsersCollection(){
         return FirebaseFirestore.getInstance().collection(Constants.COLLECTION_NAME_USERS);
     }
 
-    public static Task<Void> createUser(String uid, String username, String avatar, String restaurantChosen){
-        User userToCreate = new User(uid, username, avatar, restaurantChosen);
+    public static Task<Void> createUser(String uid, String username, String avatar, String restaurantChosen, Date dateChosen){
+        User userToCreate = new User(uid, username, avatar, restaurantChosen, dateChosen);
 
         return UserHelper.getUsersCollection().document(uid).set(userToCreate);
     }

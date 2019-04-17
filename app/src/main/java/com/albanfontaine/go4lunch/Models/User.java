@@ -1,18 +1,22 @@
 package com.albanfontaine.go4lunch.Models;
 
+import java.util.Date;
+
 public class User {
     private String mUid;
     private String mUsername;
     private String mAvatar;
     private String mRestaurantChosen;
+    private Date mDateChosen;
 
     public User(){ }
 
-    public User(String uid, String username, String avatar, String restaurantChosen){
+    public User(String uid, String username, String avatar, String restaurantChosen, Date dateChosen){
         this.mUid = uid;
         this.mUsername = username;
         this.mAvatar = avatar;
         this.mRestaurantChosen = restaurantChosen;
+        this.mDateChosen = dateChosen;
     }
 
     // GETTERS AND SETTERS
@@ -44,7 +48,9 @@ public class User {
         return mRestaurantChosen;
     }
 
-    public void setRestaurantChosen(String restaurantChosen) {
-        mRestaurantChosen = restaurantChosen;
-    }
+    public void setRestaurantChosen(String restaurantChosen) { mRestaurantChosen = restaurantChosen; }
+
+    public Date getmDateChosen() { return mDateChosen; }
+
+    public void setmDateChosen(Date mDateChosen) { this.mDateChosen = mDateChosen; }
 }

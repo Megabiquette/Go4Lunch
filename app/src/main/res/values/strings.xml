@@ -39,6 +39,7 @@
     <string name="drawer_lunch">MY LUNCH</string>
     <string name="drawer_settings">SETTINGS</string>
     <string name="drawer_logout">LOGOUT</string>
+    <string name="no_restaurant_chosen">No restaurant chosen</string>
 
     <string name="bottom_nav_map">Map View</string>
     <string name="bottom_nav_list">List View</string>

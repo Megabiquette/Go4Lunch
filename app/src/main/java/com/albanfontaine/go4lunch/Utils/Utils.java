@@ -14,6 +14,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import java.util.Calendar;
+import java.util.List;
 
 public class Utils {
 
@@ -95,6 +96,22 @@ public class Utils {
         if(restaurant.getRating() >= 5){
             rating5.setVisibility(View.VISIBLE);
         }
+    }
+
+    /**
+     * Returns a Restaurant object from a restaurant list using its name
+     *
+     * @param name name of the restaurant to return
+     * @param restaurants list of Restaurant objects
+     * @return
+     */
+    public static Restaurant getRestaurantChosen(String name, List<Restaurant> restaurants){
+        for(Restaurant restaurant : restaurants){
+            if(restaurant.getName().equals(name)){
+                return restaurant;
+            }
+        }
+        return null;
     }
 
 }

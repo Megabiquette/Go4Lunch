@@ -34,6 +34,7 @@ import android.widget.Toast;
 import com.albanfontaine.go4lunch.Models.ApiResponsePlaceDetails;
 import com.albanfontaine.go4lunch.Models.ApiResponsePlaceSearchRestaurant;
 import com.albanfontaine.go4lunch.Models.Restaurant;
+import com.albanfontaine.go4lunch.Models.User;
 import com.albanfontaine.go4lunch.R;
 import com.albanfontaine.go4lunch.Utils.Constants;
 import com.albanfontaine.go4lunch.Utils.GoogleStreams;
@@ -47,6 +48,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -77,8 +81,9 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
 
     private Disposable mDisposable;
     private List<Restaurant> mRestaurants;
-    Location mLocation;
-    int nbRestaurantsFetched;
+    private Location mLocation;
+    private int nbRestaurantsFetched;
+    private Gson mGson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +91,8 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_base);
         ButterKnife.bind(this);
 
-        mRestaurants = new ArrayList<Restaurant>();
+        mRestaurants = new ArrayList<>();
+        mGson = new Gson();
 
         configureToolbar();
         configureDrawerLayout();
@@ -99,11 +105,6 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         this.getCurrentLocation();
         this.searchNearbyRestaurantsRequest();
     }
-
-    protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
-
-    protected boolean isCurrentUserLoggedIn(){ return this.getCurrentUser() != null; }
-
     ///////////////////
     // HTTP REQUESTS //
     ///////////////////
@@ -124,8 +125,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                     public void onError(Throwable e) { Log.e("Request error", e.getMessage()); }
 
                     @Override
-                    public void onComplete() {
-                    }
+                    public void onComplete() { }
                 });
     }
 
@@ -205,9 +205,29 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
-
             // Menu drawer buttons
             case R.id.drawer_lunch:
+                UserHelper.getUser(getCurrentUser().getUid()).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()){
+                            User user = task.getResult().toObject(User.class);
+                            if(user.getRestaurantChosen() == null){
+                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.no_restaurant_chosen), Toast.LENGTH_SHORT).show();
+                            }else{
+                                Intent intent = new Intent(getApplicationContext(), RestaurantCardActivity.class);
+                                Type restaurantType = new TypeToken<Restaurant>() { }.getType();
+                                Restaurant restaurant = Utils.getRestaurantChosen(user.getRestaurantChosen(), mRestaurants);
+                                String restaurantString = mGson.toJson(restaurant, restaurantType);
+                                intent.putExtra(Constants.RESTAURANT, restaurantString);
+                                startActivity(intent);
+                            }
+                        }else{
+                            Log.e("getUser", task.getException().getMessage());
+                        }
+                    }
+                });
+
 
                 break;
             case R.id.drawer_settings:
@@ -268,15 +288,29 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         transaction.commit();
     }
 
-    private void createUserInFirestore(){
-        if(this.getCurrentUser() != null){
-            String uid = this.getCurrentUser().getUid();
-            String username = this.getCurrentUser().getDisplayName();
-            String avatar = (this.getCurrentUser().getPhotoUrl() != null) ?
-                    this.getCurrentUser().getPhotoUrl().toString() : null;
+    protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
 
-            UserHelper.createUser(uid, username, avatar, null)
-            .addOnFailureListener(this.onFailureListener());
+    private void createUserInFirestore(){
+        if(getCurrentUser() != null){
+            UserHelper.getUsersCollection().document(getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()){
+                        if(!task.getResult().exists()){
+                            // The user is not in the database yet, so we add them
+                            String uid = getCurrentUser().getUid();
+                            String username = getCurrentUser().getDisplayName();
+                            String avatar = (getCurrentUser().getPhotoUrl() != null) ?
+                                    getCurrentUser().getPhotoUrl().toString() : null;
+
+                            UserHelper.createUser(uid, username, avatar, null, null)
+                                    .addOnFailureListener(onFailureListener());
+                        }
+                    }else{
+                        Log.e("createUserInFirestore", task.getException().getMessage());
+                    }
+                }
+            });
         }
     }
 
