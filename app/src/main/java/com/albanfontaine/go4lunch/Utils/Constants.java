@@ -1,6 +1,8 @@
 package com.albanfontaine.go4lunch.Utils;
 
 public class Constants {
+    // Channel ID for notifications
+    public final static String CHANNEL_ID = "Lunch notifications";
 
     // Google Maps API Key
     public static final String API_KEY = "AIzaSyD9_p1mVe5ibunRP_VmhNf56N8nygUo52Y";
@@ -16,6 +18,7 @@ public class Constants {
     public static final String LOCATION = "location";
     public static final String RESTAURANT = "restaurant";
     public static final String RESTAURANT_URL = "restaurantUrl";
+    public static final String SWITCH = "switch";
 
     // Firestore
     public static final String COLLECTION_NAME_USERS = "users";

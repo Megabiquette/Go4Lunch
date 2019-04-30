@@ -63,4 +63,6 @@
     <string name="workmate_recycler_view_eating_at">%1$s is eating at %2$s</string>
     <string name="workmate_hasnt_decided">%1$s hasn\'t decided yet</string>
 
+    <string name="enable_notifications">Enable notifications</string>
+
 </resources>

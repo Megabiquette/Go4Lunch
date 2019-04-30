@@ -33,6 +33,8 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -44,6 +46,7 @@ public class WorkmatesFragment extends Fragment {
 
     private WorkmateAdapter mAdapter;
     private List<User> mWorkmates;
+    private List<User> mWorkmatesWithoutRestaurant;
     private ArrayList<Restaurant> mRestaurants;
     Gson mGson;
 
@@ -57,6 +60,7 @@ public class WorkmatesFragment extends Fragment {
         View result = inflater.inflate(R.layout.fragment_workmates, container, false);
         ButterKnife.bind(this, result);
         mWorkmates = new ArrayList<>();
+        mWorkmatesWithoutRestaurant = new ArrayList<>();
         mGson = new Gson();
 
         this.getRestaurantList();
@@ -74,8 +78,20 @@ public class WorkmatesFragment extends Fragment {
                 if(task.isSuccessful()){
                     for (QueryDocumentSnapshot document : task.getResult()){
                         User workmate = document.toObject(User.class);
-                        mWorkmates.add(workmate);
+                        if(workmate.getRestaurantChosen() != null){
+                            mWorkmates.add(workmate);
+                        } else {
+                            mWorkmatesWithoutRestaurant.add(workmate);
+                        }
                     }
+                    // sort workmates by restaurant then add workmates without restaurant
+                    Collections.sort(mWorkmates, new Comparator<User>() {
+                        @Override
+                        public int compare(User o1, User o2) {
+                            return o1.getRestaurantChosen().compareTo(o2.getRestaurantChosen());
+                        }
+                    });
+                    mWorkmates.addAll(mWorkmatesWithoutRestaurant);
                     configureRecyclerView();
                 }else {
                     Log.e("Workmate query error", task.getException().getMessage());

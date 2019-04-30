@@ -23,4 +23,6 @@
     <dimen name="restaurant_card_address_size">18sp</dimen>
     <dimen name="restaurant_card_name_icon_text_size">16sp</dimen>
     <dimen name="restaurant_card_icon_height">38dp</dimen>
+
+    <dimen name="settings_text_size">20sp</dimen>
 </resources>

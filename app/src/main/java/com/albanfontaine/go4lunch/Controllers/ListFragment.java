@@ -19,6 +19,8 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,6 +46,14 @@ public class ListFragment extends Fragment {
         this.getRestaurantList();
         this.configureRecyclerView();
         this.configureOnClickRecyclerView();
+
+        // sorts the restaurants by distance
+        Collections.sort(mRestaurants, new Comparator<Restaurant>() {
+            @Override
+            public int compare(Restaurant o1, Restaurant o2) {
+                return Integer.valueOf(o1.getDistance()).compareTo(Integer.valueOf(o2.getDistance()));
+            }
+        });
 
         return result;
     }

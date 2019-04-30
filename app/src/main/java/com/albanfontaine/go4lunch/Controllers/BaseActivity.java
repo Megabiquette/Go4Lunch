@@ -4,9 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -49,8 +47,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -105,6 +101,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         this.getCurrentLocation();
         this.searchNearbyRestaurantsRequest();
     }
+
     ///////////////////
     // HTTP REQUESTS //
     ///////////////////
@@ -180,11 +177,12 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             openingHours = null;
         }
         String website = result.getWebsite();
-
-        mRestaurants.add(new Restaurant(id, name, address, latitude, longitude, distance, phone, rating, photoRef, isOpenNow, openingHours, closingHours, website));
+        Restaurant restaurant = new Restaurant(id, name, address, latitude, longitude, distance, phone, rating, photoRef, isOpenNow, openingHours, closingHours, website);
+        mRestaurants.add(restaurant);
 
         // Create restaurant in Firestore
-        RestaurantHelper.createRestaurant(name).addOnFailureListener(this.onFailureListener());
+        String details = mGson.toJson(restaurant);
+        RestaurantHelper.createRestaurant(name, details).addOnFailureListener(this.onFailureListener());
     }
 
     private void getCurrentLocation(){
@@ -227,12 +225,13 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                         }
                     }
                 });
-
-
                 break;
+
             case R.id.drawer_settings:
-
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
                 break;
+
             case R.id.drawer_logout:
                 // Log out user and return to sign in screen
                 AuthUI.getInstance().signOut(this)
@@ -275,9 +274,8 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     private void showFragmentWithList(Fragment fragment){
         Type arrayType = new TypeToken<ArrayList<Restaurant>>(){ }.getType();
         Type locationType = new TypeToken<Location>(){ }.getType();
-        Gson gson = new Gson();
-        String restaurantList = gson.toJson(mRestaurants, arrayType);
-        String location = gson.toJson(mLocation, locationType);
+        String restaurantList = mGson.toJson(mRestaurants, arrayType);
+        String location = mGson.toJson(mLocation, locationType);
         Bundle bundle = new Bundle();
         bundle.putString(Constants.RESTAURANT_LIST, restaurantList);
         bundle.putString(Constants.LOCATION, location);

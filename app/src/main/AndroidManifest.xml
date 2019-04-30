@@ -17,8 +17,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Controllers.WebViewActivity"></activity>
-        <activity android:name=".Controllers.RestaurantCardActivity"></activity>
+        <activity android:name=".Controllers.SettingsActivity"
+            android:label="Settings" />
+        <activity android:name=".Controllers.WebViewActivity" />
+        <activity android:name=".Controllers.RestaurantCardActivity" />
         <activity
             android:name=".Controllers.BaseActivity"
             android:label="@string/base_activity_title" />

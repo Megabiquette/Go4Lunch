@@ -13,6 +13,7 @@ import java.util.List;
 
 public class RestaurantHelper {
 
+
     public static CollectionReference getRestaurantsCollection(){
         return FirebaseFirestore.getInstance().collection(Constants.COLLECTION_NAME_RESTAURANT);
     }
@@ -25,8 +26,8 @@ public class RestaurantHelper {
         return RestaurantHelper.getRestaurantsCollection().document(name).collection(Constants.COLLECTION_NAME_USERS_WHO_JOINED).get();
     }
 
-    public static Task<Void> createRestaurant(String name){
-        FirebaseRestaurant restaurantToCreate = new FirebaseRestaurant(name);
+    public static Task<Void> createRestaurant(String name, String details){
+        FirebaseRestaurant restaurantToCreate = new FirebaseRestaurant(name, details);
         return RestaurantHelper.getRestaurantsCollection().document(name).set(restaurantToCreate);
     }
 
