@@ -50,7 +50,7 @@ public class User {
 
     public void setRestaurantChosen(String restaurantChosen) { mRestaurantChosen = restaurantChosen; }
 
-    public Date getmDateChosen() { return mDateChosen; }
+    public Date getDateChosen() { return mDateChosen; }
 
-    public void setmDateChosen(Date mDateChosen) { this.mDateChosen = mDateChosen; }
+    public void setDateChosen(Date mDateChosen) { this.mDateChosen = mDateChosen; }
 }

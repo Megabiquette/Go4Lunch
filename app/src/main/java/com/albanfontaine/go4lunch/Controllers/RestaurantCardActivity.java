@@ -13,7 +13,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,17 +25,13 @@ import com.albanfontaine.go4lunch.Utils.Constants;
 import com.albanfontaine.go4lunch.Utils.RestaurantHelper;
 import com.albanfontaine.go4lunch.Utils.UserHelper;
 import com.albanfontaine.go4lunch.Utils.Utils;
-import com.albanfontaine.go4lunch.Views.RestaurantAdapter;
 import com.albanfontaine.go4lunch.Views.WorkmateAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
@@ -44,11 +39,11 @@ import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Type;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -108,10 +103,20 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()){
+                    Date dateNow = new Date();
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    String formattedDateNow = dateFormat.format(dateNow);
+                    // Get the number of workmates to iterate so we know when the request is over and we can start display the recycler view
                     numberWorkmates = task.getResult().getDocuments().size();
                     for (QueryDocumentSnapshot document : task.getResult()){
                         User workmate = document.toObject(User.class);
-                        mWorkmates.add(workmate);
+                        Date dateChosen = workmate.getDateChosen();
+                        String formattedDateChosen = dateFormat.format(dateChosen);
+                        if(formattedDateChosen.equals(formattedDateNow)){
+                            mWorkmates.add(workmate);
+                        }else{
+                            numberWorkmates--;
+                        }
                         if(mWorkmates.size() == numberWorkmates){
                             configureRecyclerView();
                         }
@@ -201,21 +206,21 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
     }
 
     private void selectRestaurant(){
+        Date date = new Date(); // Timestamp
         if(mUser.getRestaurantChosen() != null){
             // User already chose another restaurant, we have to deselect it
             RestaurantHelper.removeUserToJoinList(mUser.getRestaurantChosen(), mUser.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    UserHelper.selectRestaurant(mUser.getUid(), mRestaurant.getName());
+                    UserHelper.selectRestaurant(mUser.getUid(), mRestaurant.getName(), date);
                     RestaurantHelper.addUserToJoinList(mRestaurant.getName(), mUser.getUid(), mUser);
                     mChooseButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_check));
                     mChosen = true;
                     mUser.setRestaurantChosen(mRestaurant.getName());
-                    // TODO Timestamp
                 }
             }).addOnFailureListener(this.onFailureListener());
         }else{
-            UserHelper.selectRestaurant(mUser.getUid(), mRestaurant.getName());
+            UserHelper.selectRestaurant(mUser.getUid(), mRestaurant.getName(), date);
             RestaurantHelper.addUserToJoinList(mRestaurant.getName(), mUser.getUid(), mUser);
             mChooseButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_check));
             mChosen = true;

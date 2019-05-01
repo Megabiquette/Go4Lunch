@@ -2,6 +2,7 @@ package com.albanfontaine.go4lunch.Utils;
 
 import com.albanfontaine.go4lunch.Models.User;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,8 +34,8 @@ public class UserHelper {
         return UserHelper.getUsersCollection().document(uid).delete();
     }
 
-    public static Task<Void> selectRestaurant(String uid, String restaurantName){
-        return UserHelper.getUsersCollection().document(uid).update("restaurantChosen", restaurantName);
+    public static Task<Void> selectRestaurant(String uid, String restaurantName, Date date){
+        return UserHelper.getUsersCollection().document(uid).update("restaurantChosen", restaurantName, "dateChosen", date);
     }
 
     public static Task<Void> deselectRestaurant(String uid){
