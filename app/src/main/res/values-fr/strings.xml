@@ -1,0 +1,68 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="facebook_application_id" translatable="false">237274790548784</string>
+    <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb237274790548784</string>
+    <string name="twitter_consumer_key" translatable="false">Zyv9SeTbWyzEc5zJQ1lz6JTk8</string>
+    <string name="twitter_consumer_secret" translatable="false">uWwCCPDPJy2ulIJjODWcDhGmOQInGNoqqeLoCQbIPo8ZF35950</string>
+    <string name="googlemaps_api">AIzaSyCuLEwa0AV7nGr26_yFIS57Vf9eEZOjvlQ</string>
+
+    <string name="map_style">
+        [
+  {
+    "featureType": "poi",
+     "elementType": "labels",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  }
+]
+    </string>
+
+    <string name="app_name">Go4Lunch</string>
+    <string name="app_description">Trouvez un restaurant et invitez vos collègues à déjeuner !</string>
+    <string name="base_activity_title">J\'ai Faim !</string>
+
+    <string name="button_login_email">Connectez vous avec votre Email</string>
+    <string name="button_login_facebook">Connectez vous avec Facebook</string>
+    <string name="button_login_google">Connectez vous avec Google</string>
+    <string name="button_login_twitter">Connectez vous avec Twitter</string>
+
+    <string name="authentication_success">Connexion réussie</string>
+    <string name="authentication_canceled">Connexion annulée</string>
+    <string name="no_internet">Appareil non connecté à internet</string>
+    <string name="unknown_error">Erreur inconnue</string>
+
+    <string name="navigation_drawer_open">Ouvrir menu</string>
+    <string name="navigation_drawer_close">Fermer menu</string>
+    <string name="toolbar_menu_search">Rechercher</string>
+    <string name="drawer_lunch">MON DEJEUNER</string>
+    <string name="drawer_settings">PARAMETRES</string>
+    <string name="drawer_logout">DECONNEXION</string>
+    <string name="no_restaurant_chosen">Aucun restaurant choisi</string>
+    <string name="autocomplete_hint">Chercher restaurants</string>
+
+    <string name="bottom_nav_map">Carte</string>
+    <string name="bottom_nav_list">Liste</string>
+    <string name="bottom_nav_workmates">Collègues</string>
+
+    <string name="restaurant_distance">%1$sm</string>
+    <string name="restaurant_people_count">(%1d)</string>
+    <string name="restaurant_hours_no_info">Pas d\'info sur les horaires</string>
+    <string name="restaurant_hours_open">Ouvert\u0020</string>
+    <string name="restaurant_hours_until">jusqu\'a\u0020</string>
+    <string name="restaurant_hours_closed">Fermé</string>
+
+    <string name="restaurant_card_call">APPELER</string>
+    <string name="restaurant_card_like">AIMER</string>
+    <string name="restaurant_card_website">SITE WEB</string>
+    <string name="restaurant_card_liked">AIMÉ!</string>
+    <string name="no_website">Aucun site web pour ce restaurant</string>
+
+    <string name="restaurant_card_recycler_item_workmate_name_is_joining">%1$s y mange!</string>
+    <string name="workmate_recycler_view_eating_at">%1$s mange à %2$s</string>
+    <string name="workmate_hasnt_decided">%1$s n\'a pas encore décidé</string>
+
+    <string name="enable_notifications">Activer les notifications</string>
+
+</resources>

@@ -31,7 +31,7 @@
     <string name="authentication_success">Authentication success</string>
     <string name="authentication_canceled">Authentication canceled</string>
     <string name="no_internet">Device not connected to the internet</string>
-    <string name="unknown_error">Unknown error </string>
+    <string name="unknown_error">Unknown error</string>
 
     <string name="navigation_drawer_open">Open menu</string>
     <string name="navigation_drawer_close">Close menu</string>
@@ -45,7 +45,6 @@
     <string name="bottom_nav_map">Map View</string>
     <string name="bottom_nav_list">List View</string>
     <string name="bottom_nav_workmates">Workmates</string>
-    <string name="bottom_nav_chat">Chat</string>
 
     <string name="restaurant_distance">%1$sm</string>
     <string name="restaurant_people_count">(%1d)</string>
