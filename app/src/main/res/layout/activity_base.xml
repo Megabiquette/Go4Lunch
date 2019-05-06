@@ -18,6 +18,10 @@
             layout="@layout/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+        <include
+            layout="@layout/toolbar_autocomplete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <FrameLayout
             android:id="@+id/activity_base_frame_layout"

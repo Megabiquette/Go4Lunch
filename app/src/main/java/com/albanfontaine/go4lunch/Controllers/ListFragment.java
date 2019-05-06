@@ -84,8 +84,8 @@ public class ListFragment extends Fragment {
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                         Intent intent = new Intent(getContext(), RestaurantCardActivity.class);
                         Type restaurantType = new TypeToken<Restaurant>() { }.getType();
-                        String restaurant = mGson.toJson(mAdapter.getRestaurant(position), restaurantType);
-                        intent.putExtra(Constants.RESTAURANT, restaurant);
+                        String restaurantGSON = mGson.toJson(mAdapter.getRestaurant(position), restaurantType);
+                        intent.putExtra(Constants.RESTAURANT, restaurantGSON);
                         startActivity(intent);
                     }
                 });

@@ -114,9 +114,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     public boolean onMarkerClick(Marker marker) {
         Gson gson = new Gson();
         Type restaurantType = new TypeToken<Restaurant>() { }.getType();
-        String restaurant = gson.toJson(marker.getTag(), restaurantType);
+        String restaurantGSON = gson.toJson(marker.getTag(), restaurantType);
         Intent intent = new Intent(getContext(), RestaurantCardActivity.class);
-        intent.putExtra(Constants.RESTAURANT, restaurant);
+        intent.putExtra(Constants.RESTAURANT, restaurantGSON);
         startActivity(intent);
 
         return false;

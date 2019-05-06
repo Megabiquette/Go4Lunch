@@ -25,6 +25,9 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +54,8 @@ import com.squareup.picasso.Picasso;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.SocketException;
@@ -70,6 +75,9 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     @BindView(R.id.activity_base_drawer_layout) DrawerLayout mDrawerLayout;
     @BindView(R.id.activity_base_nav_view) NavigationView mNavigationView;
     @BindView(R.id.activity_base_bottom_navigation) BottomNavigationView mBottomNavigationView;
+    @BindView(R.id.toolbar_autocomplete) Toolbar mToolbarAutocomplete;
+    @BindView(R.id.autocomplete_search_icon) ImageView mAutocompleteSearchIcon;
+    AutoCompleteTextView mAutocompleteTextView;
     // Drawer menu header
     ImageView mAvatar;
     TextView mUsername;
@@ -141,6 +149,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                     public void onComplete() {
                         // Checks if all restaurants have been created
                         if(mRestaurants.size() == nbRestaurantsFetched){
+                            configureAutoComplete();
                             showFragmentWithList(new MapFragment());
                         }
                     }
@@ -265,7 +274,8 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     public boolean onOptionsItemSelected(MenuItem item) {
         // Search button
         if(item.getItemId() == R.id.toolbar_search){
-
+            mToolbar.setVisibility(View.GONE);
+            mToolbarAutocomplete.setVisibility(View.VISIBLE);
         }
         return true;
     }
@@ -354,6 +364,41 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         mAvatar =  headerView.findViewById(R.id.drawer_avatar);
         mUsername  = headerView.findViewById(R.id.drawer_username);
         mEmail = headerView.findViewById(R.id.drawer_email);
+    }
+
+    private void configureAutoComplete(){
+        mAutocompleteSearchIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(v.getId() == R.id.autocomplete_search_icon){
+                    mToolbar.setVisibility(View.VISIBLE);
+                    mToolbarAutocomplete.setVisibility(View.GONE);
+                }
+            }
+        });
+        ArrayList<String> namesArrayList = new ArrayList<>();
+        for(Restaurant restaurant : mRestaurants){
+            namesArrayList.add(restaurant.getName());
+        }
+        String[] restaurantNames = namesArrayList.toArray(new String[namesArrayList.size()]);
+        ArrayAdapter<String> autocompleteAdapter = new ArrayAdapter<>(this, R.layout.autocomplete_adapter, restaurantNames);
+        mAutocompleteTextView = findViewById(R.id.autocomplete_textview);
+        mAutocompleteTextView.setAdapter(autocompleteAdapter);
+        mAutocompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String name = (String) parent.getItemAtPosition(position);
+                for(Restaurant restaurant : mRestaurants){
+                    if(restaurant.getName().equals(name)){
+                        Intent intent = new Intent(getApplicationContext(), RestaurantCardActivity.class);
+                        Type restaurantType = new TypeToken<Restaurant>() { }.getType();
+                        String restaurantGSON = mGson.toJson(restaurant, restaurantType);
+                        intent.putExtra(Constants.RESTAURANT, restaurantGSON);
+                        startActivity(intent);
+                    }
+                }
+            }
+        });
     }
 
     private void configureNavigationView(){
