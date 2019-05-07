@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,8 +55,6 @@ import com.squareup.picasso.Picasso;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.SocketException;
@@ -77,6 +76,8 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     @BindView(R.id.activity_base_bottom_navigation) BottomNavigationView mBottomNavigationView;
     @BindView(R.id.toolbar_autocomplete) Toolbar mToolbarAutocomplete;
     @BindView(R.id.autocomplete_search_icon) ImageView mAutocompleteSearchIcon;
+    @BindView(R.id.activity_base_no_internet) TextView mNoInternetTextView;
+    @BindView(R.id.activity_base_frame_layout) FrameLayout mFrameLayout;
     AutoCompleteTextView mAutocompleteTextView;
     // Drawer menu header
     ImageView mAvatar;
@@ -98,16 +99,24 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         mRestaurants = new ArrayList<>();
         mGson = new Gson();
 
-        configureToolbar();
-        configureDrawerLayout();
-        configureDrawerHeader();
-        configureNavigationView();
-        setUserInfos();
-        setErrorHandler();
+        // Check internet connection
+        if(Utils.isConnectedToInternet(this)){
+            configureToolbar();
+            configureDrawerLayout();
+            configureDrawerHeader();
+            configureNavigationView();
+            setUserInfos();
+            setErrorHandler();
+            this.createUserInFirestore();
+            this.getCurrentLocation();
+            this.searchNearbyRestaurantsRequest();
+        }else{
+            mToolbar.setVisibility(View.GONE);
+            mFrameLayout.setVisibility(View.GONE);
+            mBottomNavigationView.setVisibility(View.GONE);
+            mNoInternetTextView.setVisibility(View.VISIBLE);
+        }
 
-        this.createUserInFirestore();
-        this.getCurrentLocation();
-        this.searchNearbyRestaurantsRequest();
     }
 
     ///////////////////

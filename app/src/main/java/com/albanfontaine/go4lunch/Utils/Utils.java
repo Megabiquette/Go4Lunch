@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
@@ -112,6 +114,19 @@ public class Utils {
             }
         }
         return null;
+    }
+
+    /**
+     * Checks the internet connection
+     *
+     * @param context the current context
+     * @return a boolean set to true if the device is connected to the internet
+     */
+    public static boolean isConnectedToInternet(Context context){
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo network = cm.getActiveNetworkInfo();
+        return network != null && network.isConnectedOrConnecting();
     }
 
 }

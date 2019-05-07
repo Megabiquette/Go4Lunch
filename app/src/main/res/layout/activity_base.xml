@@ -31,6 +31,18 @@
 
         </FrameLayout>
 
+        <TextView
+            android:id="@+id/activity_base_no_internet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/no_internet"
+            android:textAlignment="center"
+            android:paddingTop="25dp"
+            android:textColor="@color/quantum_black_text"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:visibility="gone"/>
+
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/activity_base_bottom_navigation"
             android:layout_width="match_parent"
