@@ -229,7 +229,6 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
         }
         mWorkmates.add(mUser);
         mAdapter.notifyDataSetChanged();
-        Log.e("select", mWorkmates.toString());
     }
 
     private void deselectRestaurant(){
@@ -243,7 +242,6 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
         }).addOnFailureListener(this.onFailureListener());
         mWorkmates.remove(mUser);
         mAdapter.notifyDataSetChanged();
-        Log.e("deselect", mWorkmates.toString());
     }
 
     private void likeRestaurant(){
