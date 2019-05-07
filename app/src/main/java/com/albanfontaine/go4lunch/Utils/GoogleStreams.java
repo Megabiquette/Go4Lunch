@@ -31,15 +31,4 @@ public class GoogleStreams {
                 .timeout(10, TimeUnit.SECONDS);
     }
 
-/*
-    public static Observable<ApiResponsePlaceDetails> streamFetchPlaceDetailForNearbyRestaurants(String location){
-        return streamFetchNearbyRestaurants(location)
-                .flatMap(new Function<ApiResponsePlaceSearchRestaurant, Observable<ApiResponsePlaceDetails>>(){
-                    @Override
-                    public Observable<ApiResponsePlaceDetails> apply(ApiResponsePlaceSearchRestaurant apiResponsePlaceSearchRestaurant) throws Exception {
-                        return streamFetchPlaceDetail(apiResponsePlaceSearchRestaurant.getResults().get(0).getId());
-                    }
-                });
-    }
-    */
 }

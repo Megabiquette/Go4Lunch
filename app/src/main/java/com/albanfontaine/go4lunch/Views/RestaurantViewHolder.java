@@ -55,7 +55,7 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
         }
 
         // Restaurant rating
-        Utils.showRatingStars(restaurant, mRating1, mRating2, mRating3, mRating4, mRating5);
+        Utils.showRatingStars(restaurant, mRating1, mRating2, mRating3);
         if(restaurant.getRating() >= 1){
             mRating1.setVisibility(View.VISIBLE);
         }
@@ -64,12 +64,6 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
         }
         if(restaurant.getRating() >= 3){
             mRating3.setVisibility(View.VISIBLE);
-        }
-        if(restaurant.getRating() >= 4){
-            mRating4.setVisibility(View.VISIBLE);
-        }
-        if(restaurant.getRating() >= 5){
-            mRating5.setVisibility(View.VISIBLE);
         }
 
         // Restaurant opening hours

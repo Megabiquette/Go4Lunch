@@ -82,7 +82,7 @@ public class Utils {
      * @param restaurant The restaurant
      * @param rating1 A yellow star to make visible (as an ImageView object), same goes for the other stars
      */
-    public static void showRatingStars(Restaurant restaurant, ImageView rating1, ImageView rating2, ImageView rating3, ImageView rating4, ImageView rating5){
+    public static void showRatingStars(Restaurant restaurant, ImageView rating1, ImageView rating2, ImageView rating3){
         if(restaurant.getRating() >= 1){
             rating1.setVisibility(View.VISIBLE);
         }
@@ -91,12 +91,6 @@ public class Utils {
         }
         if(restaurant.getRating() >= 3){
             rating3.setVisibility(View.VISIBLE);
-        }
-        if(restaurant.getRating() >= 4){
-            rating4.setVisibility(View.VISIBLE);
-        }
-        if(restaurant.getRating() >= 5){
-            rating5.setVisibility(View.VISIBLE);
         }
     }
 

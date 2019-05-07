@@ -58,20 +58,6 @@
                     android:src="@drawable/ic_yellow_star"
                     android:visibility="gone"/>
 
-                <ImageView
-                    android:id="@+id/restaurant_card_rating4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_yellow_star"
-                    android:visibility="gone"/>
-
-                <ImageView
-                    android:id="@+id/restaurant_card_rating5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_yellow_star"
-                    android:visibility="gone"/>
-
             </LinearLayout>
 
             <TextView

@@ -175,7 +175,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         double longitude = result.geometry.getLocation().getLng();
         String distance = Utils.calculateDistanceBetweenLocations(mLocation, (float)latitude, (float)longitude);
         String phone = result.getInternationalPhoneNumber();
-        int rating = result.getRating().intValue();
+        int rating = (int) Math.round(result.getRating()*3/5);
         String photoRef = null;
         if(result.getPhotos() != null )
             photoRef = result.getPhotos().get(0).getPhotoReference();

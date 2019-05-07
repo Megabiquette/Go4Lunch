@@ -56,8 +56,6 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
     @BindView(R.id.restaurant_card_rating1) ImageView mRating1;
     @BindView(R.id.restaurant_card_rating2) ImageView mRating2;
     @BindView(R.id.restaurant_card_rating3) ImageView mRating3;
-    @BindView(R.id.restaurant_card_rating4) ImageView mRating4;
-    @BindView(R.id.restaurant_card_rating5) ImageView mRating5;
     @BindView(R.id.restaurant_card_icon_call) ImageView mCallIcon;
     @BindView(R.id.restaurant_card_icon_like) ImageView mLikeIcon;
     @BindView(R.id.restaurant_card_like_text) TextView mLikeText;
@@ -120,6 +118,8 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
                         if(mWorkmates.size() == numberWorkmates){
                             configureRecyclerView();
                         }
+                        if(mUser.getUid().equals(workmate.getUid()))
+                            mUser = workmate;
                     }
                 }else {
                     Log.e("Workmate query error", task.getException().getMessage());
@@ -135,7 +135,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
         String photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=700&photoreference=" + mRestaurant.getPhotoRef() + "&key=" + Constants.API_KEY;
         Picasso.with(this).load(photoUrl).fit().centerCrop().into(mPhoto);
 
-        Utils.showRatingStars(mRestaurant, mRating1, mRating2, mRating3, mRating4, mRating5);
+        Utils.showRatingStars(mRestaurant, mRating1, mRating2, mRating3);
     }
 
     @Override
@@ -207,6 +207,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
 
     private void selectRestaurant(){
         Date date = new Date(); // Timestamp
+        mUser.setDateChosen(date);
         if(mUser.getRestaurantChosen() != null){
             // User already chose another restaurant, we have to deselect it
             RestaurantHelper.removeUserToJoinList(mUser.getRestaurantChosen(), mUser.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -226,6 +227,9 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
             mChosen = true;
             mUser.setRestaurantChosen(mRestaurant.getName());
         }
+        mWorkmates.add(mUser);
+        mAdapter.notifyDataSetChanged();
+        Log.e("select", mWorkmates.toString());
     }
 
     private void deselectRestaurant(){
@@ -237,6 +241,9 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
                 mChosen = false;
             }
         }).addOnFailureListener(this.onFailureListener());
+        mWorkmates.remove(mUser);
+        mAdapter.notifyDataSetChanged();
+        Log.e("deselect", mWorkmates.toString());
     }
 
     private void likeRestaurant(){
@@ -263,13 +270,18 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
     }
 
     private void setChosenAndLiked(){
-        // see if the restaurant was already chosen
-        if(mUser.getRestaurantChosen()!= null && mUser.getRestaurantChosen().equals(mName.getText().toString())){
+        // see if the restaurant was already chosen today
+        Date dateNow = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDateNow = dateFormat.format(dateNow);
+        Date dateChosen = mUser.getDateChosen();
+        String formattedDateChosen = dateFormat.format(dateChosen);
+        if(mUser.getRestaurantChosen()!= null && mUser.getDateChosen() != null && mUser.getRestaurantChosen().equals(mName.getText().toString()) && formattedDateChosen.equals(formattedDateNow)){
             mChooseButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_check));
             mChosen = true;
         }
 
-        // see if the restaurant was liked
+        // See if the restaurant was liked
         RestaurantHelper.getWhoLikedRestaurant(mRestaurant.getName()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
