@@ -126,6 +126,12 @@ public class Utils {
         return network != null && network.isConnectedOrConnecting();
     }
 
+    /**
+     * Converts a Date object to a String in "yyyy-MM-dd" format
+     *
+     * @param date The Date to convert
+     * @return a String
+     */
     public static String getFormattedDate(Date date){
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         return dateFormat.format(date);
