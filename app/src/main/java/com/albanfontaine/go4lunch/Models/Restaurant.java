@@ -12,7 +12,6 @@ public class Restaurant {
     private boolean mIsOpenNow;
     private String mOpeningHours;
     private String mClosingHours;
-    private int mPeopleCount;
     private int mRating;
     private String mPhotoRef;
     private String mPhone;
@@ -81,14 +80,6 @@ public class Restaurant {
 
     public void setOpeningHours(String openingHours) {
         mOpeningHours = openingHours;
-    }
-
-    public int getPeopleCount() {
-        return mPeopleCount;
-    }
-
-    public void setPeopleCount(int peopleCount) {
-        mPeopleCount = peopleCount;
     }
 
     public int getRating() {

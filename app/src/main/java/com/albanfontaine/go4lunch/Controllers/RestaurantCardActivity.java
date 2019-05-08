@@ -29,7 +29,6 @@ import com.albanfontaine.go4lunch.Views.WorkmateAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -85,7 +84,6 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
         mChooseButton.setOnClickListener(this);
 
         this.getRestaurant(savedInstanceState);
-        this.getWorkmates();
         this.displayRestaurantInfos();
     }
 
@@ -96,6 +94,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
         mRestaurant = gson.fromJson(restaurant, restaurantType);
     }
 
+    // Get workmates and configure RecyclerView
     private void getWorkmates(){
         RestaurantHelper.getWhoJoinedRestaurant(mRestaurant.getName()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -104,8 +103,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
                     Date dateNow = new Date();
                     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                     String formattedDateNow = dateFormat.format(dateNow);
-                    // Get the number of workmates to iterate so we know when the request is over and we can start display the recycler view
-                    numberWorkmates = task.getResult().getDocuments().size();
+
                     for (QueryDocumentSnapshot document : task.getResult()){
                         User workmate = document.toObject(User.class);
                         Date dateChosen = workmate.getDateChosen();
@@ -115,12 +113,10 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
                         }else{
                             numberWorkmates--;
                         }
-                        if(mWorkmates.size() == numberWorkmates){
-                            configureRecyclerView();
-                        }
                         if(mUser.getUid().equals(workmate.getUid()))
                             mUser = workmate;
                     }
+                    configureRecyclerView();
                 }else {
                     Log.e("Workmate query error", task.getException().getMessage());
                 }
@@ -198,6 +194,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
                 if(task.isSuccessful()){
                     mUser = task.getResult().toObject(User.class);
                     setChosenAndLiked();
+                    getWorkmates();
                 }else{
                     Log.e("getUser", task.getException().getMessage());
                 }
@@ -206,26 +203,50 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
     }
 
     private void selectRestaurant(){
-        Date date = new Date(); // Timestamp
+        Date date = new Date();
         mUser.setDateChosen(date);
         if(mUser.getRestaurantChosen() != null){
             // User already chose another restaurant, we have to deselect it
             RestaurantHelper.removeUserToJoinList(mUser.getRestaurantChosen(), mUser.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    UserHelper.selectRestaurant(mUser.getUid(), mRestaurant.getName(), date);
-                    RestaurantHelper.addUserToJoinList(mRestaurant.getName(), mUser.getUid(), mUser);
-                    mChooseButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_check));
-                    mChosen = true;
                     mUser.setRestaurantChosen(mRestaurant.getName());
+                    UserHelper.selectRestaurant(mUser.getUid(), mRestaurant.getName(), date).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                RestaurantHelper.addUserToJoinList(mRestaurant.getName(), mUser.getUid(), mUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            mChooseButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_check));
+                                            mChosen = true;
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
                 }
             }).addOnFailureListener(this.onFailureListener());
         }else{
-            UserHelper.selectRestaurant(mUser.getUid(), mRestaurant.getName(), date);
-            RestaurantHelper.addUserToJoinList(mRestaurant.getName(), mUser.getUid(), mUser);
-            mChooseButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_check));
-            mChosen = true;
             mUser.setRestaurantChosen(mRestaurant.getName());
+            UserHelper.selectRestaurant(mUser.getUid(), mRestaurant.getName(), date).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        RestaurantHelper.addUserToJoinList(mRestaurant.getName(), mUser.getUid(), mUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    mChooseButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_check));
+                                    mChosen = true;
+                                }
+                            }
+                        });
+                    }
+                }
+            });
         }
         mWorkmates.add(mUser);
         mAdapter.notifyDataSetChanged();
