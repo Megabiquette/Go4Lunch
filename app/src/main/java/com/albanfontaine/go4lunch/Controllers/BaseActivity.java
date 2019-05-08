@@ -59,6 +59,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -227,8 +228,10 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if(task.isSuccessful()){
+                            String formattedDateNow = Utils.getFormattedDate(new Date());
                             User user = task.getResult().toObject(User.class);
-                            if(user.getRestaurantChosen() == null){
+                            String formattedDateChosen = Utils.getFormattedDate(user.getDateChosen());
+                            if(user.getRestaurantChosen() == null || !formattedDateChosen.equals(formattedDateNow)){
                                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.no_restaurant_chosen), Toast.LENGTH_SHORT).show();
                             }else{
                                 Intent intent = new Intent(getApplicationContext(), RestaurantCardActivity.class);

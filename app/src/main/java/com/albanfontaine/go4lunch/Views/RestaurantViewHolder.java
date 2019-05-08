@@ -20,8 +20,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import butterknife.BindView;
@@ -58,13 +56,10 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()){
-                    Date dateNow = new Date();
-                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                    String formattedDateNow = dateFormat.format(dateNow);
+                    String formattedDateNow = Utils.getFormattedDate(new Date());
                     for (QueryDocumentSnapshot document : task.getResult()){
                         User workmate = document.toObject(User.class);
-                        Date dateChosen = workmate.getDateChosen();
-                        String formattedDateChosen = dateFormat.format(dateChosen);
+                        String formattedDateChosen = Utils.getFormattedDate(workmate.getDateChosen());
                         if(formattedDateChosen.equals(formattedDateNow)){
                             mPeopleJoining++;
                         }

@@ -4,8 +4,6 @@ import com.albanfontaine.go4lunch.Models.FirebaseRestaurant;
 import com.albanfontaine.go4lunch.Models.User;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 

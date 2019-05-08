@@ -2,7 +2,6 @@ package com.albanfontaine.go4lunch.Utils;
 
 import com.albanfontaine.go4lunch.Models.User;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;

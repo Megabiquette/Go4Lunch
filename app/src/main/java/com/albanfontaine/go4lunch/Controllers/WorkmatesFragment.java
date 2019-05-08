@@ -17,24 +17,17 @@ import com.albanfontaine.go4lunch.Models.User;
 import com.albanfontaine.go4lunch.R;
 import com.albanfontaine.go4lunch.Utils.Constants;
 import com.albanfontaine.go4lunch.Utils.ItemClickSupport;
-import com.albanfontaine.go4lunch.Utils.RestaurantHelper;
 import com.albanfontaine.go4lunch.Utils.UserHelper;
 import com.albanfontaine.go4lunch.Utils.Utils;
-import com.albanfontaine.go4lunch.Views.RestaurantAdapter;
 import com.albanfontaine.go4lunch.Views.WorkmateAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -79,15 +72,12 @@ public class WorkmatesFragment extends Fragment {
         UserHelper.getAllUsers().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                Date dateNow = new Date();
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                String formattedDateNow = dateFormat.format(dateNow);
+                String formattedDateNow = Utils.getFormattedDate(new Date());
                 if(task.isSuccessful()){
                     for (QueryDocumentSnapshot document : task.getResult()){
                         User workmate = document.toObject(User.class);
                         if(workmate.getDateChosen() != null){ // If the workmate has never chosen a restaurant, he will not be displayed
-                            Date dateChosen = workmate.getDateChosen();
-                            String formattedDateChosen = dateFormat.format(dateChosen);
+                            String formattedDateChosen = Utils.getFormattedDate(workmate.getDateChosen());
                             if(!formattedDateChosen.equals(formattedDateNow)){
                                 workmate.setRestaurantChosen(null);
                             }

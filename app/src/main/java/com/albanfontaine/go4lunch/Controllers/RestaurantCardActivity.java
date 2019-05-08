@@ -203,15 +203,14 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
     }
 
     private void selectRestaurant(){
-        Date date = new Date();
-        mUser.setDateChosen(date);
+        mUser.setDateChosen(new Date());
         if(mUser.getRestaurantChosen() != null){
             // User already chose another restaurant, we have to deselect it
             RestaurantHelper.removeUserToJoinList(mUser.getRestaurantChosen(), mUser.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     mUser.setRestaurantChosen(mRestaurant.getName());
-                    UserHelper.selectRestaurant(mUser.getUid(), mRestaurant.getName(), date).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    UserHelper.selectRestaurant(mUser.getUid(), mRestaurant.getName(), new Date()).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
@@ -231,7 +230,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
             }).addOnFailureListener(this.onFailureListener());
         }else{
             mUser.setRestaurantChosen(mRestaurant.getName());
-            UserHelper.selectRestaurant(mUser.getUid(), mRestaurant.getName(), date).addOnCompleteListener(new OnCompleteListener<Void>() {
+            UserHelper.selectRestaurant(mUser.getUid(), mRestaurant.getName(), new Date()).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
@@ -290,11 +289,8 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
 
     private void setChosenAndLiked(){
         // see if the restaurant was already chosen today
-        Date dateNow = new Date();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String formattedDateNow = dateFormat.format(dateNow);
-        Date dateChosen = mUser.getDateChosen();
-        String formattedDateChosen = dateFormat.format(dateChosen);
+        String formattedDateNow = Utils.getFormattedDate(new Date());
+        String formattedDateChosen = Utils.getFormattedDate(mUser.getDateChosen());
         if(mUser.getRestaurantChosen()!= null && mUser.getDateChosen() != null && mUser.getRestaurantChosen().equals(mName.getText().toString()) && formattedDateChosen.equals(formattedDateNow)){
             mChooseButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_check));
             mChosen = true;
