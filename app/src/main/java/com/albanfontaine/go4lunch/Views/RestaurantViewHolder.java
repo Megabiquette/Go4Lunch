@@ -35,8 +35,6 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.fragment_list_item_rating1) ImageView mRating1;
     @BindView(R.id.fragment_list_item_rating2) ImageView mRating2;
     @BindView(R.id.fragment_list_item_rating3) ImageView mRating3;
-    @BindView(R.id.fragment_list_item_rating4) ImageView mRating4;
-    @BindView(R.id.fragment_list_item_rating5) ImageView mRating5;
     @BindView(R.id.fragment_list_item_photo) ImageView mPhoto;
     int mPeopleJoining = 0;
 
