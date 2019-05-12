@@ -108,16 +108,16 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             configureNavigationView();
             setUserInfos();
             setErrorHandler();
-            this.createUserInFirestore();
-            this.getCurrentLocation();
-            this.searchNearbyRestaurantsRequest();
+            getCurrentLocation();
+            createUserInFirestore();
+            getCurrentLocation();
+            searchNearbyRestaurantsRequest();
         }else{
             mToolbar.setVisibility(View.GONE);
             mFrameLayout.setVisibility(View.GONE);
             mBottomNavigationView.setVisibility(View.GONE);
             mNoInternetTextView.setVisibility(View.VISIBLE);
         }
-
     }
 
     ///////////////////
@@ -149,7 +149,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 .subscribeWith(new DisposableObserver<ApiResponsePlaceDetails>(){
                     @Override
                     public void onNext(ApiResponsePlaceDetails apiResponsePlaceDetails) {
-                        createRestaurants(apiResponsePlaceDetails, placeId);
+                        createRestaurant(apiResponsePlaceDetails, placeId);
                     }
 
                     @Override
@@ -167,7 +167,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     }
 
     // Create a restaurant object and add it to the restaurant list
-    private void createRestaurants(ApiResponsePlaceDetails response, String placeId){
+    private void createRestaurant(ApiResponsePlaceDetails response, String placeId){
         ApiResponsePlaceDetails.Result result = response.getResult();
         String id = placeId;
         String name = result.getName();
@@ -200,7 +200,8 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         mRestaurants.add(restaurant);
 
         // Create restaurant in Firestore
-        String details = mGson.toJson(restaurant);
+        Type restaurantType = new TypeToken<Restaurant>() { }.getType();
+        String details = mGson.toJson(restaurant, restaurantType);
         RestaurantHelper.createRestaurant(name, details).addOnFailureListener(this.onFailureListener());
     }
 

@@ -79,13 +79,13 @@ public class AlarmReceiver extends BroadcastReceiver {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
         String message = "Today you will eat at " + mRestaurantName + ".";
-        message += !mCoworkersJoining.isEmpty() ? "These coworkers will be joining you: " + mCoworkersJoining + "." : "You will be eating alone.";
+        String message2 = !mCoworkersJoining.isEmpty() ? "These coworkers will be joining you: " + mCoworkersJoining + "." : "You will be eating alone.";
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Constants.CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle("Lunch time!")
-                .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(pendingIntent)
+                .setStyle(new NotificationCompat.InboxStyle().addLine(message).addLine(message2))
                 .setAutoCancel(true);
 
         NotificationManagerCompat manager = NotificationManagerCompat.from(context);

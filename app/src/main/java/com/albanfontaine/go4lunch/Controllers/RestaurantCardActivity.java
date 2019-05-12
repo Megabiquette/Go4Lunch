@@ -65,7 +65,6 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
     private Restaurant mRestaurant;
     private List<User> mWorkmates;
     private WorkmateAdapter mAdapter;
-    private int numberWorkmates = 0;
     private boolean mChosen = false;
     private boolean mLiked = false;
     private User mUser;
@@ -77,21 +76,23 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
         ButterKnife.bind(this);
         mWorkmates = new ArrayList<>();
         this.getUser();
+        this.getRestaurant();
 
         mCallIcon.setOnClickListener(this);
         mLikeIcon.setOnClickListener(this);
         mWebsiteIcon.setOnClickListener(this);
         mChooseButton.setOnClickListener(this);
 
-        this.getRestaurant(savedInstanceState);
         this.displayRestaurantInfos();
     }
 
-    private void getRestaurant(Bundle bundle){
+    private void getRestaurant(){
         Gson gson = new Gson();
         Type restaurantType = new TypeToken<Restaurant>() { }.getType();
-        String restaurant = getIntent().getStringExtra(Constants.RESTAURANT);
+        String restaurant = getIntent().getExtras().getString(Constants.RESTAURANT);
+        Log.e("string resto", restaurant);
         mRestaurant = gson.fromJson(restaurant, restaurantType);
+        Log.e("object resto", mRestaurant.toString());
     }
 
     // Get workmates and configure RecyclerView
@@ -110,8 +111,6 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
                         String formattedDateChosen = dateFormat.format(dateChosen);
                         if(formattedDateChosen.equals(formattedDateNow)){
                             mWorkmates.add(workmate);
-                        }else{
-                            numberWorkmates--;
                         }
                         if(mUser.getUid().equals(workmate.getUid()))
                             mUser = workmate;
@@ -125,6 +124,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
     }
 
     private void displayRestaurantInfos(){
+        Log.e("resto name", mRestaurant.getName());
         mName.setText(mRestaurant.getName());
         mAddress.setText(mRestaurant.getAddress());
 

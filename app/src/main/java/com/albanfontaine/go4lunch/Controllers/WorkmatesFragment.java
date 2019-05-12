@@ -76,16 +76,17 @@ public class WorkmatesFragment extends Fragment {
                 if(task.isSuccessful()){
                     for (QueryDocumentSnapshot document : task.getResult()){
                         User workmate = document.toObject(User.class);
-                        if(workmate.getDateChosen() != null){ // If the workmate has never chosen a restaurant, he will not be displayed
-                            String formattedDateChosen = Utils.getFormattedDate(workmate.getDateChosen());
-                            if(!formattedDateChosen.equals(formattedDateNow)){
-                                workmate.setRestaurantChosen(null);
-                            }
-                            if(workmate.getRestaurantChosen() != null){
-                                mWorkmates.add(workmate);
-                            } else {
-                                mWorkmatesWithoutRestaurant.add(workmate);
-                            }
+                        if(workmate.getDateChosen() == null) {
+                            workmate.setDateChosen(new Date());
+                        }
+                        String formattedDateChosen = Utils.getFormattedDate(workmate.getDateChosen());
+                        if(!formattedDateChosen.equals(formattedDateNow)){
+                            workmate.setRestaurantChosen(null);
+                        }
+                        if(workmate.getRestaurantChosen() != null){
+                            mWorkmates.add(workmate);
+                        } else {
+                            mWorkmatesWithoutRestaurant.add(workmate);
                         }
                     }
 

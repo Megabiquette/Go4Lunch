@@ -1,7 +1,5 @@
 package com.albanfontaine.go4lunch.Models;
 
-import java.util.List;
-
 public class Restaurant {
     private String mId;
     private double mLatitude;
