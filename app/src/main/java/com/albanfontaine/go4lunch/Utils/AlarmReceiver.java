@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.util.Log;
 
 import com.albanfontaine.go4lunch.Controllers.RestaurantCardActivity;
 import com.albanfontaine.go4lunch.Models.User;
@@ -76,7 +75,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         Intent intent = new Intent(context, RestaurantCardActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra(Constants.RESTAURANT, mRestaurantDetails);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         String message = "Today you will eat at " + mRestaurantName + ".";
         String message2 = !mCoworkersJoining.isEmpty() ? "These coworkers will be joining you: " + mCoworkersJoining + "." : "You will be eating alone.";

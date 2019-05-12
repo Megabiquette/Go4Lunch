@@ -90,9 +90,7 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
         Gson gson = new Gson();
         Type restaurantType = new TypeToken<Restaurant>() { }.getType();
         String restaurant = getIntent().getExtras().getString(Constants.RESTAURANT);
-        Log.e("string resto", restaurant);
         mRestaurant = gson.fromJson(restaurant, restaurantType);
-        Log.e("object resto", mRestaurant.toString());
     }
 
     // Get workmates and configure RecyclerView
@@ -124,7 +122,6 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
     }
 
     private void displayRestaurantInfos(){
-        Log.e("resto name", mRestaurant.getName());
         mName.setText(mRestaurant.getName());
         mAddress.setText(mRestaurant.getAddress());
 
