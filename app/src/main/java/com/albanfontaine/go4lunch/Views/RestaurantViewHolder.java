@@ -36,11 +36,13 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.fragment_list_item_rating2) ImageView mRating2;
     @BindView(R.id.fragment_list_item_rating3) ImageView mRating3;
     @BindView(R.id.fragment_list_item_photo) ImageView mPhoto;
-    int mPeopleJoining = 0;
 
     public RestaurantViewHolder(View itemView){
         super(itemView);
         ButterKnife.bind(this, itemView);
+
+        mPeopleCount.setVisibility(View.GONE);
+        mPeopleIcon.setVisibility(View.GONE);
     }
 
     public void updateWithRestaurant(Restaurant restaurant, Context context){
@@ -54,17 +56,22 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()){
+                    int peopleJoining = 0;
                     String formattedDateNow = Utils.getFormattedDate(new Date());
                     for (QueryDocumentSnapshot document : task.getResult()){
                         User workmate = document.toObject(User.class);
                         String formattedDateChosen = Utils.getFormattedDate(workmate.getDateChosen());
                         if(formattedDateChosen.equals(formattedDateNow)){
-                            mPeopleJoining++;
+                            peopleJoining++;
                         }
                     }
-                    if(mPeopleJoining != 0){
+                    if(peopleJoining != 0){
                         mPeopleIcon.setVisibility(View.VISIBLE);
-                        mPeopleCount.setText(context.getResources().getString(R.string.restaurant_people_count, mPeopleJoining));
+                        mPeopleCount.setVisibility(View.VISIBLE);
+                        mPeopleCount.setText(context.getResources().getString(R.string.restaurant_people_count, peopleJoining));
+                    } else {
+                        mPeopleCount.setVisibility(View.GONE);
+                        mPeopleIcon.setVisibility(View.GONE);
                     }
                 }else{
                     Log.e("Request error", task.getException().getMessage());

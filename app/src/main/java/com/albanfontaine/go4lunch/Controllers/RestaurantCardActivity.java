@@ -285,6 +285,9 @@ public class RestaurantCardActivity extends AppCompatActivity implements View.On
     }
 
     private void setChosenAndLiked(){
+        if(mUser.getDateChosen() == null){
+            mUser.setDateChosen(new Date());
+        }
         // see if the restaurant was already chosen today
         String formattedDateNow = Utils.getFormattedDate(new Date());
         String formattedDateChosen = Utils.getFormattedDate(mUser.getDateChosen());
