@@ -446,6 +446,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    // In case of an error during the restaurant list request
     private void setErrorHandler(){
         RxJavaPlugins.setErrorHandler(e -> {
             if (e instanceof UndeliverableException) {
