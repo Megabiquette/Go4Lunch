@@ -77,11 +77,11 @@ public class AlarmReceiver extends BroadcastReceiver {
         intent.putExtra(Constants.RESTAURANT, mRestaurantDetails);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        String message = "Today you will eat at " + mRestaurantName + ".";
-        String message2 = !mCoworkersJoining.isEmpty() ? "These coworkers will be joining you: " + mCoworkersJoining + "." : "You will be eating alone.";
+        String message = context.getResources().getString(R.string.notification_today) + mRestaurantName + ".";
+        String message2 = !mCoworkersJoining.isEmpty() ? context.getResources().getString(R.string.notification_coworkers) + mCoworkersJoining + "." : context.getResources().getString(R.string.notification_alone);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Constants.CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle("Lunch time!")
+                .setContentTitle(context.getResources().getString(R.string.notification_title))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(pendingIntent)
                 .setStyle(new NotificationCompat.InboxStyle().addLine(message).addLine(message2))

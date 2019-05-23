@@ -64,5 +64,8 @@
     <string name="workmate_hasnt_decided">%1$s n\'a pas encore décidé</string>
 
     <string name="enable_notifications">Activer les notifications</string>
-
+    <string name="notification_title">A table !!</string>
+    <string name="notification_today">Aujourd\'hui vous mangez à </string>
+    <string name="notification_coworkers">Ces personnes mangeront avec vous: </string>
+    <string name="notification_alone">Vous mangerez seul.</string>
 </resources>

@@ -64,5 +64,10 @@
     <string name="workmate_hasnt_decided">%1$s hasn\'t decided yet</string>
 
     <string name="enable_notifications">Enable notifications</string>
+    <string name="notification_title">Lunch time!</string>
+    <string name="notification_today">Today you will eat at </string>
+    <string name="notification_coworkers">These coworkers will be joining you: </string>
+    <string name="notification_alone">You will be eating alone.</string>
+
 
 </resources>
