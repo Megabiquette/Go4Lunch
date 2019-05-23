@@ -30,7 +30,6 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -40,9 +39,7 @@ import java.util.ArrayList;
 public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
-    private Location mLocation;
     private ArrayList<Restaurant> mRestaurants;
-    private PlacesClient mPlacesClient;
 
     public MapFragment() { }
 
@@ -65,7 +62,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         mMap.setBuildingsEnabled(false);
         this.zoomOnMyLocation(mMap);
         Places.initialize(getContext(), getResources().getString(R.string.googlemaps_api));
-        mPlacesClient = Places.createClient(getContext());
         mMap.setMapStyle(new MapStyleOptions(getResources().getString(R.string.map_style)));
         mMap.setOnMarkerClickListener(this);
         this.addMarkers();
@@ -103,11 +99,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     public void getRestaurantListAndLocation(){
         Gson gson = new Gson();
         Type arrayType = new TypeToken<ArrayList<Restaurant>>(){ }.getType();
-        Type locationType = new TypeToken<Location>(){ }.getType();
         String restaurantList = getArguments().getString(Constants.RESTAURANT_LIST);
         mRestaurants = gson.fromJson(restaurantList, arrayType);
-        String location = getArguments().getString(Constants.LOCATION);
-        mLocation = gson.fromJson(location, locationType);
     }
 
     @Override

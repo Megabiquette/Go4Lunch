@@ -90,7 +90,7 @@ public class WorkmatesFragment extends Fragment {
                         }
                     }
 
-                    // sort workmates by restaurant then add workmates without restaurant
+                    // Sort workmates by restaurant then add workmates without restaurant
                     Collections.sort(mWorkmates, new Comparator<User>() {
                         @Override
                         public int compare(User o1, User o2) {
