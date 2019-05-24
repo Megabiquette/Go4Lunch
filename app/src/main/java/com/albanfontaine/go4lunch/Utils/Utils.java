@@ -51,7 +51,7 @@ public class Utils {
 
 
     /**
-     * Calculates the distance in meters between two locations
+     * Calculates the distance in meters between two locations and converts it to String
      *
      * @param startLocation The first location
      * @param lat The latitude of the second location
@@ -75,6 +75,11 @@ public class Utils {
         return Calendar.getInstance().DAY_OF_WEEK -1;
     }
 
+    /**
+     *  Converts a time from HHMM format to HH:MM format
+     * @param hours
+     * @return
+     */
     public static String formatHours(String hours){
         return hours.substring(0,2) + ":" + hours.substring(2,4);
     }
