@@ -123,12 +123,14 @@ public class WorkmatesFragment extends Fragment {
                 .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
                     @Override
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                        Intent intent = new Intent(getContext(), RestaurantCardActivity.class);
-                        Type restaurantType = new TypeToken<Restaurant>() { }.getType();
-                        Restaurant restaurant = Utils.getRestaurantChosen(mAdapter.getWorkmate(position).getRestaurantChosen(), mRestaurants);
-                        String restaurantString = mGson.toJson(restaurant, restaurantType);
-                        intent.putExtra(Constants.RESTAURANT, restaurantString);
-                        startActivity(intent);
+                        if(mAdapter.getWorkmate(position).getRestaurantChosen() != null){
+                            Intent intent = new Intent(getContext(), RestaurantCardActivity.class);
+                            Type restaurantType = new TypeToken<Restaurant>() { }.getType();
+                            Restaurant restaurant = Utils.getRestaurantChosen(mAdapter.getWorkmate(position).getRestaurantChosen(), mRestaurants);
+                            String restaurantString = mGson.toJson(restaurant, restaurantType);
+                            intent.putExtra(Constants.RESTAURANT, restaurantString);
+                            startActivity(intent);
+                        }
                     }
                 });
     }
