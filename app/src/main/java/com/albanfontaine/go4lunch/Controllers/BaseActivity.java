@@ -110,7 +110,6 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             setErrorHandler();
             getCurrentLocation();
             createUserInFirestore();
-            getCurrentLocation();
             searchNearbyRestaurantsRequest();
         }else{
             mToolbar.setVisibility(View.GONE);
